@@ -3,4 +3,5 @@ public abstract class Account implements Comparable<Account>{
     protected double balance;
     public abstract double monthlyInterest();
     public abstract double monthlyFee();
+
 }

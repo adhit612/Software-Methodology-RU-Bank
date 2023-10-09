@@ -1,6 +1,6 @@
 public class Checking extends Account {
-    public static final int INTEREST_RATE = 5;
-    public static final int FEE = 5;
+    public static final int INTEREST_RATE = 1;
+    public static final int FEE = 12;
 
     @Override
     public double monthlyInterest() {

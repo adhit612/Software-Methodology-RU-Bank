@@ -1,6 +1,6 @@
 public class Savings extends Account {
-    public static final int INTEREST_RATE = 5;
-    public static final int FEE = 5;
+    public static final int INTEREST_RATE = 4;
+    public static final int FEE = 25;
     protected boolean isLoyal; //loyal customer status
 
 
