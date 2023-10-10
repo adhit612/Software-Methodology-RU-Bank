@@ -11,16 +11,16 @@ public class Profile implements Comparable<Profile>{
     //compare by first name then last name, then dob
     @Override
     public int compareTo(Profile o) {
-        if(this.fname.toLowerCase().compareTo(o.fname.toLowerCase()) < 0){
-            return -1;
-        }
-        else if(this.fname.toLowerCase().compareTo(o.fname.toLowerCase()) > 0){
-            return 1;
-        }
-        else if(this.lname.toLowerCase().compareTo(o.lname.toLowerCase()) < 0){
+        if(this.lname.toLowerCase().compareTo(o.lname.toLowerCase()) < 0){
             return -1;
         }
         else if(this.lname.toLowerCase().compareTo(o.lname.toLowerCase()) > 0){
+            return 1;
+        }
+        else if(this.fname.toLowerCase().compareTo(o.fname.toLowerCase()) < 0){
+            return -1;
+        }
+        else if(this.fname.toLowerCase().compareTo(o.fname.toLowerCase()) > 0){
             return 1;
         }
         else {
