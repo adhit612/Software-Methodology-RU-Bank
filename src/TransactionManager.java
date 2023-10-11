@@ -22,6 +22,21 @@ public class TransactionManager {
      * Resets # of withdrawals in money market to 0
      */
 
+    /**
+     * TO DO:
+     *Test Checkings
+     *Test Savings
+     * Test CollegeChecking
+     *Test MoneyMarket
+     * Add check for money market in transactionmanager scanner to make sure minimum deposit is $2000
+     *
+     * COMPLETED:
+     * Checking class implementation
+     * Savings class implementation
+     * CollegeChecking class implementation
+     * MoneyMarket class implementation
+     */
+
     public static void main(String[] args) {
         System.out.println("hello");
     }
