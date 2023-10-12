@@ -1,17 +1,19 @@
+package classes;
+
 public enum CampusCode {
-    ZERO{
+    ZERO {
         @Override
         public String toString(){
             return "New Brunswick";
         }
     },
-    ONE{
+    ONE {
         @Override
         public String toString(){
             return "Newark";
         }
     },
-    TWO{
+    TWO {
         @Override
         public String toString(){
             return "Camden";

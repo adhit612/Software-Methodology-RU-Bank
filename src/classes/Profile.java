@@ -1,3 +1,5 @@
+package classes;
+
 public class Profile implements Comparable<Profile>{
     private String fname;
     private String lname;
@@ -11,16 +13,16 @@ public class Profile implements Comparable<Profile>{
     //compare by first name then last name, then dob
     @Override
     public int compareTo(Profile o) {
-        if(this.lname.toLowerCase().compareTo(o.lname.toLowerCase()) < 0){
+        if(this.lname.toLowerCase().compareTo(o.lname.toLowerCase()) < 0) {
             return -1;
         }
-        else if(this.lname.toLowerCase().compareTo(o.lname.toLowerCase()) > 0){
+        else if(this.lname.toLowerCase().compareTo(o.lname.toLowerCase()) > 0) {
             return 1;
         }
-        else if(this.fname.toLowerCase().compareTo(o.fname.toLowerCase()) < 0){
+        else if(this.fname.toLowerCase().compareTo(o.fname.toLowerCase()) < 0) {
             return -1;
         }
-        else if(this.fname.toLowerCase().compareTo(o.fname.toLowerCase()) > 0){
+        else if(this.fname.toLowerCase().compareTo(o.fname.toLowerCase()) > 0) {
             return 1;
         }
         else {
@@ -36,9 +38,9 @@ public class Profile implements Comparable<Profile>{
         }
     }
 
-    public static void main(String [] args){
-        Profile one = new Profile("Yo","Mane",new Date("3/28/2010"));
-        Profile two = new Profile("Yo","Mane",new Date("3/28/2010"));
+    public static void main(String [] args) {
+        Profile one = new Profile("Yo","Mane", new Date("3/28/2010"));
+        Profile two = new Profile("Yo","Mane", new Date("3/28/2010"));
 
         System.out.println(one.compareTo(two));
     }

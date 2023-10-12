@@ -1,3 +1,5 @@
+package classes;
+
 public class Savings extends Account {
     public static final double INTEREST_RATE = 0.04;
     public static final int FEE = 25;

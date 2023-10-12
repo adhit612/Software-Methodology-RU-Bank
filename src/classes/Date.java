@@ -1,8 +1,10 @@
+package classes;
+
 import java.util.Calendar;
 
 /**
- * Class that declares the Date Event component.
- * Declares a Date by taking in a String.
+ * Class that declares the classes.Date Event component.
+ * Declares a classes.Date by taking in a String.
  * The String gets split into year, month, nad day.
  * @author Abhishek Thakare, Adhit Thakur
  */
@@ -34,7 +36,7 @@ public class Date implements Comparable<Date> {
     public static final int THIRTYMAX = 30;
 
     /**
-     * Constructor for Date.
+     * Constructor for classes.Date.
      * Declare contact with department and email.
      * @param date input calendar date string.
      */
@@ -46,10 +48,10 @@ public class Date implements Comparable<Date> {
     }
 
     /**
-     * Determine if the Date is a valid Calendar date.
+     * Determine if the classes.Date is a valid Calendar date.
      * Not checking if date is within 6 months or in the past.
      * Only checking if the numbers given exist in Calendar.
-     * @return true if the Date is a valid calendar date, false otherwise.
+     * @return true if the classes.Date is a valid calendar date, false otherwise.
      */
     public boolean isValid() {
         if (!isValidMonth(this.month)) {
@@ -76,10 +78,10 @@ public class Date implements Comparable<Date> {
     }
 
     /**
-     * Determine if the Date's month is supposed to have 31 days.
-     * Checking this to ensure that the number entered for the month is valid.
-     * @param month the Date's month.
-     * @return true if the Date's month has 31 days, false otherwise.
+     * Determine if the classes.Date's month is supposed to have 31 days.
+     * classes.Checking this to ensure that the number entered for the month is valid.
+     * @param month the classes.Date's month.
+     * @return true if the classes.Date's month has 31 days, false otherwise.
      */
     private boolean hasThirtyOneDays(int month) {
         if (month == JAN || month == MAR || month == MAY || month == JUL
@@ -90,11 +92,11 @@ public class Date implements Comparable<Date> {
     }
 
     /**
-     * Determine if the Date's year is within a leap year.
+     * Determine if the classes.Date's year is within a leap year.
      * Used in isValid() to check when February is entered.
      * Makes sure February 29th is not entered in a non-leap year.
-     * @param year the Date's year.
-     * @return true if the Date's year is leap, false otherwise.
+     * @param year the classes.Date's year.
+     * @return true if the classes.Date's year is leap, false otherwise.
      */
     private boolean isLeap(int year) {
         if (year % QUADRENNIAL == 0) {
@@ -116,9 +118,9 @@ public class Date implements Comparable<Date> {
     }
 
     /**
-     * Determine if the Date's month is a valid number Month.
+     * Determine if the classes.Date's month is a valid number Month.
      * Making sure that a month less than 1 or greater than 12 is entered.
-     * @param month the Date's month.
+     * @param month the classes.Date's month.
      * @return true if month is a valid number month, false otherwise.
      */
     private boolean isValidMonth(int month) {
@@ -133,9 +135,9 @@ public class Date implements Comparable<Date> {
 
     /**
      * Determine if the given date is within 6 months of present.
-     * @param month the Date's month.
-     * @param year the Date's year.
-     * @param day the Date's day.
+     * @param month the classes.Date's month.
+     * @param year the classes.Date's year.
+     * @param day the classes.Date's day.
      * @return 1 if given date is not within 6 months in the future, -1/0 otherwise.
      */
     public int checkIfWithinBounds(int month, int year, int day) {
@@ -152,10 +154,10 @@ public class Date implements Comparable<Date> {
 
     /**
      * Determine if the given date is in the past.
-     * Date cannot be in the past, as it would have already happened.
-     * @param month the Date's month.
-     * @param year the Date's year.
-     * @param day the Date's day.
+     * classes.Date cannot be in the past, as it would have already happened.
+     * @param month the classes.Date's month.
+     * @param year the classes.Date's year.
+     * @param day the classes.Date's day.
      * @return 1 if given date is in the past, -1/0 otherwise.
      */
     public int checkIfInPast(int month, int year, int day) {
@@ -170,7 +172,7 @@ public class Date implements Comparable<Date> {
     }
 
     /**
-     * Generate a string that properly formats the Date.
+     * Generate a string that properly formats the classes.Date.
      * @return a string containing the toString() message.
      */
     @Override
@@ -179,24 +181,24 @@ public class Date implements Comparable<Date> {
     }
 
     /**
-     * Return the Date's month.
-     * @return the Date's month.
+     * Return the classes.Date's month.
+     * @return the classes.Date's month.
      */
     public int getMonth() {
         return this.month;
     }
 
     /**
-     * Return the Date's year.
-     * @return the Date's year.
+     * Return the classes.Date's year.
+     * @return the classes.Date's year.
      */
     public int getYear() {
         return this.year;
     }
 
     /**
-     * Return the Date's day.
-     * @return the Date's day.
+     * Return the classes.Date's day.
+     * @return the classes.Date's day.
      */
     public int getDay() {
         return this.day;
@@ -221,7 +223,7 @@ public class Date implements Comparable<Date> {
 
     /**
      * Compare two dates.
-     * @param date the Date to be compared.
+     * @param date the classes.Date to be compared.
      * @return 1 if "this" ahead of parameter, -1 if "this" before parameter, 0 if equal.
      */
     @Override
@@ -269,7 +271,7 @@ public class Date implements Comparable<Date> {
     }
 
     /**
-     * Tests the Date in February for a non-leap year using isValid().
+     * Tests the classes.Date in February for a non-leap year using isValid().
      * 30 exceeds 28, so it will print "succeeded" because the date is false.
      */
     private static void testDaysInFeb_NonLeap() {
@@ -287,7 +289,7 @@ public class Date implements Comparable<Date> {
     }
 
     /**
-     * Tests the Date in February for a leap year using isValid().
+     * Tests the classes.Date in February for a leap year using isValid().
      * Expected Output is true since 29 is possible in 2024.
      * Prints "succeeded" since date is valid.
      */
@@ -306,7 +308,7 @@ public class Date implements Comparable<Date> {
     }
 
     /**
-     * Tests the formatting of entered Date using isValid().
+     * Tests the formatting of entered classes.Date using isValid().
      * Actual output is false when full year is not entered.
      * Prints "succeeded" if actual output is false.
      */

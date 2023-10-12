@@ -1,3 +1,5 @@
+package classes;
+
 public class MoneyMarket extends Savings {
     public static final double INTEREST_RATE = 0.045;
 
