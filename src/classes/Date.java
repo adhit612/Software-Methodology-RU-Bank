@@ -141,8 +141,8 @@ public class Date implements Comparable<Date> {
      * @return 1 if given date is not within 6 months in the future, -1/0 otherwise.
      */
     public int checkIfWithinBounds(int month, int year, int day) {
+        //if date of birth is today or in the future, then is invalid
         Calendar aheadDate = Calendar.getInstance();
-        aheadDate.add(Calendar.MONTH, 6);
 
         Calendar currDate = Calendar.getInstance();
         currDate.set(Calendar.DAY_OF_MONTH, day);

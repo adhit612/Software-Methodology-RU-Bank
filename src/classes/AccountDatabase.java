@@ -28,6 +28,7 @@ public class AccountDatabase {
         return false;
     }
     public boolean withdraw(Account account) { //false if insufficient fund
+       //increase money market amount of withdrawals here, use getter and setter methods
         return false;
     }
     public void deposit(Account account) {

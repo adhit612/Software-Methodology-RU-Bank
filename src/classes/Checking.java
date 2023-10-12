@@ -10,20 +10,20 @@ public class Checking extends Account {
 
     @Override
     public double monthlyInterest() {
-        return this.balance += (this.balance * INTEREST_RATE);
+        return INTEREST_RATE;
     }
 
     @Override
     public double monthlyFee() {
-        //-2 means balance is over 1000, -1 means there is insufficient funds
+        //-1 means insufficient funds
         if (this.balance >= 1000){
-            return -2;
+            return 0.0;
         }
         else if (this.balance - FEE < 0) {
-            return -1;
+            return -1.0;
         }
         else {
-            return this.balance -= FEE;
+            return FEE;
         }
     }
 

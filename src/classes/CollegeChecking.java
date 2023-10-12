@@ -2,17 +2,17 @@ package classes;
 
 public class CollegeChecking extends Checking {
 
-    private Campus campus; //campus code
+    private CampusCode campus; //campus code
     public static final double INTEREST_RATE = 0.01;
 
-    public CollegeChecking(double balance,Campus campus){
+    public CollegeChecking(double balance,CampusCode campus){
         super(balance);
         this.campus = campus;
     }
 
     @Override
     public double monthlyInterest() {
-        return (this.balance += (this.balance * INTEREST_RATE));
+        return INTEREST_RATE;
     }
 
     @Override

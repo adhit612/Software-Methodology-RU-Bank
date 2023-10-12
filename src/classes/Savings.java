@@ -15,21 +15,22 @@ public class Savings extends Account {
         double finalRate = INTEREST_RATE;
         if(isLoyal){
             finalRate += 0.25;
+            return finalRate;
         }
-        return this.balance += (this.balance * finalRate);
+        return finalRate;
     }
 
     @Override
     public double monthlyFee() {
-        //-2 means above 500, -1 means insufficient funds
+        //-1 means insufficient funds
         if(this.balance >= 500){
-            return -2;
+            return 0.0;
         }
         else if(this.balance - FEE < 0){
             return -1;
         }
         else{
-            return (this.balance -= FEE);
+            return FEE;
         }
     }
 

@@ -15,28 +15,27 @@ public class MoneyMarket extends Savings {
     @Override
     public double monthlyInterest() {
         if(isLoyal){
-            return ((this.balance) +(this.balance * INTEREST_RATE_LOYAL));
+            return INTEREST_RATE_LOYAL;
         }
         else{
-            return ((this.balance) +(this.balance * INTEREST_RATE));
+            return INTEREST_RATE;
         }
     }
 
     @Override
     public double monthlyFee() {
-        withdrawal ++;
         //-1 means balance greater than 2000
         if(this.balance >= 2000){
             this.isLoyal = true;
-            return -1;
+            return 0.0;
         }
         else{
             this.isLoyal = false;
-            this.balance -= FEE;
+            double finalDeduction = FEE;
             if(this.withdrawal > 3){
-                this.balance -= 10;
+                finalDeduction -= 10;
             }
-            return this.balance;
+            return finalDeduction;
         }
     }
 
@@ -53,4 +52,11 @@ public class MoneyMarket extends Savings {
        }
     }
 
+    public int getWithdrawal(){
+        return this.withdrawal;
+    }
+
+    public void setWithdrawal(int newWithdrawal){
+        this.withdrawal = newWithdrawal;
+    }
 }
