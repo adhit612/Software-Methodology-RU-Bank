@@ -1,8 +1,10 @@
 package classes;
 
+import java.text.DecimalFormat;
+
 public class Savings extends Account {
     public static final double INTEREST_RATE = 0.04;
-    public static final int FEE = 25;
+    public static final double FEE = 25;
     protected boolean isLoyal; //loyal customer status
 
     public Savings(double balance,boolean isLoyal, Profile prof){
@@ -50,11 +52,12 @@ public class Savings extends Account {
 
     @Override
     public String toString() {
+        DecimalFormat df = new DecimalFormat("#,###.00");
         if(this.getLoyal()) {
-            return "Savings::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + this.getBalance() + "::is loyal";
+            return "Savings::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + df.format(this.getBalance()) + "::is loyal";
         }
         else{
-            return "Savings::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + this.getBalance();
+            return "Savings::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + df.format(getBalance());
         }
 
     }

@@ -1,5 +1,7 @@
 package classes;
 
+import java.text.DecimalFormat;
+
 public class MoneyMarket extends Savings {
     public static final double INTEREST_RATE = 0.045;
 
@@ -55,9 +57,11 @@ public class MoneyMarket extends Savings {
         return this.withdrawal;
     }
 
-    public void setWithdrawal(int newWithdrawal){
-        this.withdrawal = newWithdrawal;
+    public void setWithdrawal(){
+        this.withdrawal ++;
     }
+
+    public void resetWithdrawal(){this.withdrawal = 0;}
 
     public String returnType(){
         return "Money Market";
@@ -65,11 +69,12 @@ public class MoneyMarket extends Savings {
 
     @Override
     public String toString() {
+        DecimalFormat df = new DecimalFormat("#,###.00");
         if(this.getLoyal()) {
-            return "Money Market::Savings::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + this.getBalance() + "::is loyal" + "::withdrawal " + this.getWithdrawal();
+            return "Money Market::Savings::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + df.format(this.getBalance()) + "::is loyal" + "::withdrawal " + this.getWithdrawal();
         }
         else{
-            return "Savings::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + this.getBalance() + "::withdrawal" + this.getWithdrawal();
+            return "Savings::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + df.format(this.getBalance()) + "::withdrawal " + this.getWithdrawal();
         }
     }
 }

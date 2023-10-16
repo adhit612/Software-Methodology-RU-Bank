@@ -53,11 +53,12 @@ public class AccountDatabase {
      * @return true if Account is in AccountDatabase, false otherwise.
      */
     public boolean contains(Account account) {
+
         for (int i = 0; i < this.accounts.length; i++) {
             if (this.accounts[i] == null) {
                 return false;
             }
-            if (this.accounts[i].equals(account)) {
+            if (this.accounts[i].equals(account) && ((this.accounts[i].returnType().equals(account.returnType()) || ((this.accounts[i].returnType().equals("Checking") && account.returnType().equals("College Checking"))) || ((this.accounts[i].returnType().equals("College Checking") && account.returnType().equals("Checking")))))) {
                 return true;
             }
         }
@@ -116,12 +117,11 @@ public class AccountDatabase {
        //increase money market amount of withdrawals here, use getter and setter methods
         for(int i = 0; i < this.accounts.length; i ++){
             if(this.accounts[i].equals(account)){
-                double currBal = this.accounts[i].getBalance();
+                double currBal = account.getBalance();
                 if(currBal - account.getBalance() < 0){
                     return false;
                 }
                 else{
-                    currBal -= account.getBalance();
                     this.accounts[i].setBalance(currBal);
                 }
             }
@@ -131,14 +131,14 @@ public class AccountDatabase {
     public void deposit(Account account) {
         for(int i = 0; i < this.accounts.length; i ++) {
             if(this.accounts[i].equals(account)) {
-                double currBal = this.accounts[i].getBalance();
-                currBal += account.getBalance();
+                double currBal = account.getBalance();
                 this.accounts[i].setBalance(currBal);
                 break;
             }
         }
     }
     public void printSorted() { //sort by account type and profile
+        System.out.println();
         System.out.println("*Accounts sorted by account type and profile.");
         for (int i = 1; i < this.accounts.length; i++) {
             if (this.accounts[i] == null) {
@@ -172,9 +172,12 @@ public class AccountDatabase {
             System.out.println(this.accounts[x].toString());
         }
         System.out.println("*end of list.");
+        System.out.println();
     }
     public void printFeesAndInterests() { //calculate interests/fees
-        DecimalFormat df = new DecimalFormat("0.00");
+        System.out.println();
+        System.out.println("*list of accounts with fee and monthly interest");
+        DecimalFormat df = new DecimalFormat("#,###.00");
         for (int i = 1; i < this.accounts.length; i++) {
             if (this.accounts[i] == null) {
                 break;
@@ -204,18 +207,22 @@ public class AccountDatabase {
             if (this.accounts[x] == null) {
                 break;
             }
-            double interest = this.accounts[x].getBalance() * this.accounts[x].monthlyInterest();
-            System.out.println(this.accounts[x].toString() + "::fee $" + this.accounts[x].monthlyFee() + "::monthly interest $" + df.format(this.accounts[x].getBalance() * interest));
+            double interest = (this.accounts[x].getBalance() * this.accounts[x].monthlyInterest())/12;
+            System.out.println(this.accounts[x].toString() + "::fee $" + df.format(this.accounts[x].monthlyFee()) + "::monthly interest $" + df.format(interest));
         }
+        System.out.println("*end of list.");
+        System.out.println();
     }
 
     public void printUpdatedBalances() { //apply the interests/fees
+        System.out.println();
+        System.out.println("*list of accounts with fees and interests applied.");
         for (int x = 0; x < this.accounts.length; x++) {
             if(this.accounts[x] == null) {
                 break;
             }
-            double interest = this.accounts[x].getBalance() * this.accounts[x].monthlyInterest();
-            double fee = this.accounts[x].getBalance();
+            double interest = (this.accounts[x].getBalance() * this.accounts[x].monthlyInterest())/12;
+            double fee = this.accounts[x].monthlyFee();
             double currBalance = this.accounts[x].getBalance() - fee + interest;
             this.accounts[x].setBalance(currBalance);
         }
@@ -244,8 +251,13 @@ public class AccountDatabase {
             if (this.accounts[x] == null) {
                 break;
             }
+            if(this.accounts[x].returnType().equals("Money Market")){
+                ((MoneyMarket) this.accounts[x]).resetWithdrawal();
+            }
             System.out.println(this.accounts[x].toString());
         }
+        System.out.println("*end of list.");
+        System.out.println();
     }
 
     public int getNumAcct() {
@@ -257,7 +269,7 @@ public class AccountDatabase {
             if (this.accounts[i] == null) {
                 return null;
             }
-            if(this.accounts[i].getProfile().getFname().equals(account.getProfile().getFname()) && this.accounts[i].getProfile().getLname().equals(account.getProfile().getLname()) && this.accounts[i].getProfile().getDOB().equals(account.getProfile().getDOB()) && this.accounts[i].returnType().equals(type)){
+            if (this.accounts[i].getProfile().getFname().toLowerCase().equals(account.getProfile().getFname().toLowerCase()) && this.accounts[i].getProfile().getLname().toLowerCase().equals(account.getProfile().getLname().toLowerCase()) && this.accounts[i].getProfile().getDOB().equals(account.getProfile().getDOB()) && this.accounts[i].returnType().equals(type)){
                 return this.accounts[i];
             }
         }

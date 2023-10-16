@@ -1,8 +1,10 @@
 package classes;
 
+import java.text.DecimalFormat;
+
 public class Checking extends Account {
     public static final double INTEREST_RATE = 0.01;
-    public static final int FEE = 12;
+    public static final double FEE = 12;
 
     public Checking(double balance, Profile prof) {
         this.balance = balance;
@@ -43,7 +45,8 @@ public class Checking extends Account {
     }
     @Override
     public String toString() {
-        return "Checking::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + this.getBalance();
+        DecimalFormat df = new DecimalFormat("#,###.00");
+        return "Checking::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + df.format(getBalance());
     }
 
     public String returnType(){
