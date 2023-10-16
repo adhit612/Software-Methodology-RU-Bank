@@ -5,9 +5,13 @@ public class CollegeChecking extends Checking {
     private CampusCode campus; //campus code
     public static final double INTEREST_RATE = 0.01;
 
-    public CollegeChecking(double balance,CampusCode campus){
-        super(balance);
+    public CollegeChecking(double balance, CampusCode campus, Profile prof){
+        super(balance,prof);
         this.campus = campus;
+    }
+
+    public CampusCode getCampus(){
+        return this.campus;
     }
 
     @Override
@@ -26,5 +30,13 @@ public class CollegeChecking extends Checking {
         else{
             return 0;
         }
+    }
+    @Override
+    public String toString() {
+        return "College Checking::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + this.getBalance() + "::" + this.getCampus().toString();
+    }
+
+    public String returnType(){
+        return "College Checking";
     }
 }

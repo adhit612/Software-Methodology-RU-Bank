@@ -5,9 +5,14 @@ public class Savings extends Account {
     public static final int FEE = 25;
     protected boolean isLoyal; //loyal customer status
 
-    public Savings(double balance,boolean isLoyal){
+    public Savings(double balance,boolean isLoyal, Profile prof){
         this.balance = balance;
         this.isLoyal = isLoyal;
+        this.holder = prof;
+    }
+
+    public boolean getLoyal(){
+        return this.isLoyal;
     }
 
     @Override
@@ -22,12 +27,8 @@ public class Savings extends Account {
 
     @Override
     public double monthlyFee() {
-        //-1 means insufficient funds
         if(this.balance >= 500){
             return 0.0;
-        }
-        else if(this.balance - FEE < 0){
-            return -1;
         }
         else{
             return FEE;
@@ -45,5 +46,20 @@ public class Savings extends Account {
         else{
             return 0;
         }
+    }
+
+    @Override
+    public String toString() {
+        if(this.getLoyal()) {
+            return "Savings::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + this.getBalance() + "::is loyal";
+        }
+        else{
+            return "Savings::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + this.getBalance();
+        }
+
+    }
+
+    public String returnType(){
+        return "Savings";
     }
 }

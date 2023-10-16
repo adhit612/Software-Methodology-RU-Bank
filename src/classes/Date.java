@@ -5,7 +5,7 @@ import java.util.Calendar;
 /**
  * Class that declares the classes.Date Event component.
  * Declares a classes.Date by taking in a String.
- * The String gets split into year, month, nad day.
+ * The String gets split into year, month, and day.
  * @author Abhishek Thakare, Adhit Thakur
  */
 public class Date implements Comparable<Date> {
@@ -140,16 +140,19 @@ public class Date implements Comparable<Date> {
      * @param day the classes.Date's day.
      * @return 1 if given date is not within 6 months in the future, -1/0 otherwise.
      */
-    public int checkIfWithinBounds(int month, int year, int day) {
+    public boolean checkIfWithinBounds(int month, int year, int day) {
         //if date of birth is today or in the future, then is invalid
         Calendar aheadDate = Calendar.getInstance();
-
         Calendar currDate = Calendar.getInstance();
         currDate.set(Calendar.DAY_OF_MONTH, day);
         currDate.set(Calendar.MONTH, month);
         currDate.set(Calendar.YEAR, year);
-
-        return currDate.compareTo(aheadDate);
+        if (currDate.compareTo(aheadDate) >= 0) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     /**
@@ -169,6 +172,12 @@ public class Date implements Comparable<Date> {
         dateAtHand.set(Calendar.YEAR, year);
 
         return currDate.compareTo(dateAtHand);
+    }
+
+    public int getTodaysDate() {
+        //if date of birth is today or in the future, then is invalid
+        Calendar current = Calendar.getInstance();
+        return current.get(Calendar.DAY_OF_MONTH);
     }
 
     /**
@@ -253,152 +262,6 @@ public class Date implements Comparable<Date> {
         }
         else {
             return 1;
-        }
-    }
-
-    /**
-     * Main testBed function to process test functions.
-     * @param args arguments passed in.
-     */
-    public static void main(String[] args) {
-        testDaysInFeb_NonLeap();
-        testDaysInFeb_Leap();
-        testDateFormatting();
-        testMaxDaysInOct();
-        testLeadingZeros();
-        testFutureDatesOutOfRange();
-        testPastDateOutOfRange();
-    }
-
-    /**
-     * Tests the classes.Date in February for a non-leap year using isValid().
-     * 30 exceeds 28, so it will print "succeeded" because the date is false.
-     */
-    private static void testDaysInFeb_NonLeap() {
-        Date date = new Date("2/30/2023");
-        boolean expectedOut = false;
-        boolean actualOutput = date.isValid();
-        System.out.println("Test case 1 => # of days in February"
-                + " in a non-leap year");
-        if (expectedOut == actualOutput) {
-            System.out.println("succeeded");
-        }
-        else {
-            System.out.println("failed");
-        }
-    }
-
-    /**
-     * Tests the classes.Date in February for a leap year using isValid().
-     * Expected Output is true since 29 is possible in 2024.
-     * Prints "succeeded" since date is valid.
-     */
-    private static void testDaysInFeb_Leap() {
-        Date date = new Date("2/29/2024");
-        boolean expectedOut = true;
-        boolean actualOutput = date.isValid();
-        System.out.println("Test case 2 => # of days in February"
-                + " in a leap yr");
-        if (expectedOut == actualOutput) {
-            System.out.println("succeeded");
-        }
-        else {
-            System.out.println("failed");
-        }
-    }
-
-    /**
-     * Tests the formatting of entered classes.Date using isValid().
-     * Actual output is false when full year is not entered.
-     * Prints "succeeded" if actual output is false.
-     */
-    private static void testDateFormatting() {
-        Date date = new Date("05/08/24");
-        boolean expectedOut = false;
-        boolean actualOutput = date.isValid();
-        System.out.println("Test case 3 => Check if date"
-                + " is entered properly");
-        if (expectedOut == actualOutput) {
-            System.out.println("succeeded");
-        }
-        else {
-            System.out.println("failed");
-        }
-    }
-
-    /**
-     * Tests a not possible day for the month of October using isValid().
-     * Actual output is false because the date is not valid.
-     * Prints "succeeded" when output is false.
-     */
-    private static void testMaxDaysInOct() {
-        Date date = new Date("10/32/2023");
-        boolean expectedOut = false;
-        boolean actualOutput = date.isValid();
-        System.out.println("Test case 4 => Should not allow days past"
-                + " maximum of October");
-        if (expectedOut == actualOutput) {
-            System.out.println("succeeded");
-        }
-        else {
-            System.out.println("failed");
-        }
-    }
-
-    /**
-     * Tests the effect of leading zeros on entered date using isValid().
-     * Should not affect the date as long as rest is entered correctly.
-     * Prints "succeeded" if actual output is true, as date is proper.
-     */
-    private static void testLeadingZeros() {
-        Date date = new Date("00012/00010/0002023");
-        boolean expectedOut = true;
-        boolean actualOutput = date.isValid();
-        System.out.println("Test case 6 => Check effect of leading 0's");
-        if (expectedOut == actualOutput) {
-            System.out.println("succeeded");
-        }
-        else {
-            System.out.println("failed");
-        }
-    }
-
-    /**
-     * Tests 6-month limit when entering date using checkIfWithinBounds().
-     * Actual output is 1 if date is out of bounds, -1 otherwise.
-     * Prints "succeeded" if output is 1.
-     */
-    private static void testFutureDatesOutOfRange() {
-        Date date = new Date("5/20/2024");
-        int expectedOut = 1;
-        int actualOutput = date.checkIfWithinBounds(date.getMonth(),
-                date.getYear(), date.getDay());
-        System.out.println("Test case 7 => Days that are outside"
-                + " of 6-month range");
-        if (expectedOut == actualOutput) {
-            System.out.println("succeeded");
-        }
-        else {
-            System.out.println("failed");
-        }
-    }
-
-    /**
-     * Tests if entered date is in the past, which is not valid, using checkIfInPast().
-     * Actual output is 1 if date is in the past, -1 if not.
-     * Prints "succeeded" if actual output matches the expected and returns 1.
-     */
-    private static void testPastDateOutOfRange() {
-        Date date = new Date("1/16/2023");
-        int expectedOut = 1;
-        int actualOutput = date.checkIfInPast(date.getMonth(),
-                date.getYear(), date.getDay());
-        System.out.println("Test case 8 => Days that are in the past");
-        if (expectedOut == actualOutput) {
-            System.out.println("succeeded");
-        }
-        else {
-            System.out.println("failed");
         }
     }
 }

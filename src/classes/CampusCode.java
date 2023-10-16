@@ -4,19 +4,19 @@ public enum CampusCode {
     ZERO {
         @Override
         public String toString(){
-            return "New Brunswick";
+            return "NEW_BRUNSWICK";
         }
     },
     ONE {
         @Override
         public String toString(){
-            return "Newark";
+            return "NEWARK";
         }
     },
     TWO {
         @Override
         public String toString(){
-            return "Camden";
+            return "CAMDEN";
         }
     }
 }

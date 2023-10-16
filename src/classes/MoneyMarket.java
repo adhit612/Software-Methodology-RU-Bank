@@ -7,8 +7,8 @@ public class MoneyMarket extends Savings {
     public static final int FEE = 25;
     private int withdrawal; //number of withdrawals
 
-    public MoneyMarket(double balance, boolean isLoyal, int withdrawal){
-        super(balance,isLoyal);
+    public MoneyMarket(double balance, boolean isLoyal, int withdrawal, Profile prof){
+        super(balance,isLoyal,prof);
         this.withdrawal = withdrawal;
     }
 
@@ -24,7 +24,6 @@ public class MoneyMarket extends Savings {
 
     @Override
     public double monthlyFee() {
-        //-1 means balance greater than 2000
         if(this.balance >= 2000){
             this.isLoyal = true;
             return 0.0;
@@ -58,5 +57,19 @@ public class MoneyMarket extends Savings {
 
     public void setWithdrawal(int newWithdrawal){
         this.withdrawal = newWithdrawal;
+    }
+
+    public String returnType(){
+        return "Money Market";
+    }
+
+    @Override
+    public String toString() {
+        if(this.getLoyal()) {
+            return "Money Market::Savings::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + this.getBalance() + "::is loyal" + "::withdrawal " + this.getWithdrawal();
+        }
+        else{
+            return "Savings::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + this.getBalance() + "::withdrawal" + this.getWithdrawal();
+        }
     }
 }
