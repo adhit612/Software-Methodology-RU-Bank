@@ -12,13 +12,18 @@ import java.text.DecimalFormat;
 
 public class TransactionManager {
 
+    public static final int MM_LIMIT = 2000;
+    public static final int MAX_AGE = 24;
+    public static final int MIN_AGE = 16;
+
+
     /**
      * Method to process O command on null
      * @param contents Line entered in command line
      * @param collection Current collection of Accounts
      * @param ad AccountDatabase holding all current data
      */
-    private void oCommandNull(String [] contents, Account [] collection, AccountDatabase ad){
+    private void oCommandNull(String [] contents, Account [] collection, AccountDatabase ad) {
         Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
         if (contents[1].equals("C")) {
             Account account = new Checking(Double.parseDouble(contents[5]), prof);
@@ -50,7 +55,7 @@ public class TransactionManager {
             System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(S)" + " opened.");
         }
         else {
-            if (Double.parseDouble(contents[5]) < 2000) {
+            if (Double.parseDouble(contents[5]) < MM_LIMIT) {
                 System.out.println("Minimum of $2000 to open a Money Market account.");
             }
             else {
@@ -67,7 +72,7 @@ public class TransactionManager {
      * @param collection Current collection of Accounts
      * @param ad AccountDatabase holding all current data
      */
-    private void oCommand(String [] contents, Account [] collection, AccountDatabase ad){
+    private void oCommand(String [] contents, Account [] collection, AccountDatabase ad) {
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         if ((!isNumeric(contents[5]))) {
             System.out.println("Not a valid amount.");
@@ -87,7 +92,7 @@ public class TransactionManager {
      * @param ad AccountDatabase holding all current data
      * @param decimalFormat Formatter to maintain 2 sig figs
      */
-    private void oCommandHelper(String [] contents, Account [] collection, AccountDatabase ad, DecimalFormat decimalFormat){
+    private void oCommandHelper(String [] contents, Account [] collection, AccountDatabase ad, DecimalFormat decimalFormat) {
         Account account = null;
         Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
         Date date = new Date(contents[4]);
@@ -101,8 +106,7 @@ public class TransactionManager {
         }
         int age = 2023 - date.getYear();
         int dayDiff = date.getDay() - date.getTodaysDate();
-        //System.out.println("todays date " + date.getTodaysDate() + " age " + age + " dayDiff " + dayDiff );
-        if (age <= 16 && dayDiff >= 0) {
+        if (age <= MIN_AGE && dayDiff >= 0) {
             System.out.println("DOB invalid: " + contents[4] + " under 16.");
             return;
         }
@@ -113,7 +117,7 @@ public class TransactionManager {
         catch (ParseException e) {
             e.printStackTrace();
         }
-        oCommandHelperTwo(contents,collection,ad,decimalFormat,account,res,prof,date,age);
+        oCommandHelperTwo(contents, collection, ad, decimalFormat, account, res, prof, date, age);
     }
 
     /**
@@ -129,12 +133,12 @@ public class TransactionManager {
      * @param date Date of the current account
      * @param age Age of the person with the account
      */
-    private void oCommandHelperTwo(String [] contents, Account [] collection, AccountDatabase ad, DecimalFormat decimalFormat, Account account, double res, Profile prof, Date date, int age){
+    private void oCommandHelperTwo(String [] contents, Account [] collection, AccountDatabase ad, DecimalFormat decimalFormat, Account account, double res, Profile prof, Date date, int age) {
         if (contents[1].equals("C")) {
             account = new Checking(res, prof);
         }
         else if (contents[1].equals("CC")) {
-            if (age >= 24 && (date.getDay() - date.getTodaysDate() >= 0)) {
+            if (age >= MAX_AGE && (date.getDay() - date.getTodaysDate() >= 0)) {
                 System.out.println("DOB invalid: " + contents[4] + " over 24.");
                 return;
             }
@@ -162,7 +166,7 @@ public class TransactionManager {
             account = new Savings(res, isLoyal, prof);
         }
         else if (contents[1].equals("MM")) {
-            if (Double.parseDouble(contents[5]) < 2000) {
+            if (Double.parseDouble(contents[5]) < MM_LIMIT) {
                 System.out.println("Minimum of $2000 to open a Money Market account.");
                 return;
             } else {
@@ -179,7 +183,7 @@ public class TransactionManager {
      * @param ad AccountDatabase holding all current data
      * @param account Account that will be added
      */
-    private void oCommandFinalCheck(String [] contents, Account [] collection, AccountDatabase ad, Account account){
+    private void oCommandFinalCheck(String [] contents, Account [] collection, AccountDatabase ad, Account account) {
         if (ad.contains(account)) {
             System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(" + contents[1] + ") is already in the database.");
         }
@@ -200,7 +204,7 @@ public class TransactionManager {
      * @param collection Current collection of Accounts
      * @param ad AccountDatabase holding all current data
      */
-    private void cCommand(String [] contents, Account [] collection, AccountDatabase ad){
+    private void cCommand(String [] contents, Account [] collection, AccountDatabase ad) {
         if (contents.length < 5) {
             System.out.println("Missing data for closing an account.");
         }
@@ -242,7 +246,7 @@ public class TransactionManager {
      * @param type Type of the current account (C, CC, etc.)
      * @return String that will be assigned to the passed in type parameter
      */
-    private String setType(String [] contents, String type){
+    private String setType(String [] contents, String type) {
         if (contents[1].equals("CC")) {
             type = "College Checking";
         }
@@ -265,7 +269,7 @@ public class TransactionManager {
      * @param ad AccountDatabase holding all current data
      * @param prof Profile of the current account
      */
-    private void dCommandErrorPrinter(String [] contents, Account [] collection, AccountDatabase ad, Profile prof){
+    private void dCommandErrorPrinter(String [] contents, Account [] collection, AccountDatabase ad, Profile prof) {
         if ((!isNumeric(contents[5]))) {
             System.out.println("Not a valid amount.");
         }
@@ -288,7 +292,7 @@ public class TransactionManager {
      * @param collection Current collection of Accounts
      * @param ad AccountDatabase holding all current data
      */
-    private void dCommand(String [] contents, Account [] collection, AccountDatabase ad){
+    private void dCommand(String [] contents, Account [] collection, AccountDatabase ad) {
         Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
         String type = "";
         type = setType(contents,type);
@@ -334,7 +338,7 @@ public class TransactionManager {
      * @param ad AccountDatabase holding all current data
      * @param prof Profile of the current account
      */
-    private void wCommandErrorPrinter(String [] contents, Account [] collection, AccountDatabase ad, Profile prof){
+    private void wCommandErrorPrinter(String [] contents, Account [] collection, AccountDatabase ad, Profile prof) {
         if ((!isNumeric(contents[5]))) {
             System.out.println("Not a valid amount.");
         }
@@ -357,7 +361,7 @@ public class TransactionManager {
      * @param collection Current collection of Accounts
      * @param ad AccountDatabase holding all current data
      */
-    private void wCommand(String [] contents, Account [] collection, AccountDatabase ad){
+    private void wCommand(String [] contents, Account [] collection, AccountDatabase ad) {
         Profile prof = new Profile(contents[2], contents[3], new Date(contents[4])); String type = ""; type = setType(contents,type);Account acc = new Checking(prof);DecimalFormat decimalFormat = new DecimalFormat("#.##");
         if (ad.containsForClose(acc, type) == null) {
             wCommandErrorPrinter(contents,collection,ad,prof);
@@ -407,7 +411,7 @@ public class TransactionManager {
      * @param ad AccountDatabase holding all current data
      * @param prof Profile of the current account
      */
-    private void wCommandFinalErrorHandler(String [] contents, Account [] collection, AccountDatabase ad, Profile prof){
+    private void wCommandFinalErrorHandler(String [] contents, Account [] collection, AccountDatabase ad, Profile prof) {
         if (contents[1].equals("CC") || contents[1].equals("MM")) {
             System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") Withdraw - insufficient fund.");
         }
@@ -468,7 +472,7 @@ public class TransactionManager {
      * @param ad AccountDatabase holding all current data
      * @return true if command is valid, false otherwise
      */
-    private boolean invalidCommandProcessor(String [] contents, Account [] collection, AccountDatabase ad){
+    private boolean invalidCommandProcessor(String [] contents, Account [] collection, AccountDatabase ad) {
         if (!isValidCommand(contents[0])) {
             System.out.println("Invalid command!");
             return true;
@@ -490,7 +494,7 @@ public class TransactionManager {
      * @param collection Current collection of Accounts
      * @param ad AccountDatabase holding all current data
      */
-    private void commandProcessor(String [] contents, Account [] collection, AccountDatabase ad){
+    private void commandProcessor(String [] contents, Account [] collection, AccountDatabase ad) {
         if (contents[0].equals("O")) {
             oCommand(contents,collection,ad);
         }
@@ -537,7 +541,6 @@ public class TransactionManager {
     /**
      * Check if the given command is of proper type.
      * Determining if the command is one of the 6 possible inputs.
-     *
      * @param str Command to be checked.
      * @return true if command is one of 6 possible inputs, otherwise false.
      */

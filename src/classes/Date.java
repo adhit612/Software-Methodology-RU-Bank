@@ -6,7 +6,6 @@ import java.util.Calendar;
  * Class that declares the classes.Date Event component.
  * Declares a classes.Date by taking in a String.
  * The String gets split into year, month, and day.
- *
  * @author Abhishek Thakare, Adhit Thakur
  */
 public class Date implements Comparable<Date> {
@@ -39,7 +38,6 @@ public class Date implements Comparable<Date> {
     /**
      * Constructor for classes.Date.
      * Declare contact with department and email.
-     *
      * @param date input calendar date string.
      */
     public Date(String date) {
@@ -51,9 +49,7 @@ public class Date implements Comparable<Date> {
 
     /**
      * Determine if the classes.Date is a valid Calendar date.
-     * Not checking if date is within 6 months or in the past.
      * Only checking if the numbers given exist in Calendar.
-     *
      * @return true if the classes.Date is a valid calendar date, false otherwise.
      */
     public boolean isValid() {
@@ -80,7 +76,6 @@ public class Date implements Comparable<Date> {
     /**
      * Determine if the classes.Date's month is supposed to have 31 days.
      * classes.Checking this to ensure that the number entered for the month is valid.
-     *
      * @param month the classes.Date's month.
      * @return true if the classes.Date's month has 31 days, false otherwise.
      */
@@ -96,7 +91,6 @@ public class Date implements Comparable<Date> {
      * Determine if the classes.Date's year is within a leap year.
      * Used in isValid() to check when February is entered.
      * Makes sure February 29th is not entered in a non-leap year.
-     *
      * @param year the classes.Date's year.
      * @return true if the classes.Date's year is leap, false otherwise.
      */
@@ -122,7 +116,6 @@ public class Date implements Comparable<Date> {
     /**
      * Determine if the classes.Date's month is a valid number Month.
      * Making sure that a month less than 1 or greater than 12 is entered.
-     *
      * @param month the classes.Date's month.
      * @return true if month is a valid number month, false otherwise.
      */
@@ -137,15 +130,13 @@ public class Date implements Comparable<Date> {
     }
 
     /**
-     * Determine if the given date is within 6 months of present.
-     *
+     * Determine if the given date is today or in the future.
      * @param month the classes.Date's month.
      * @param year  the classes.Date's year.
      * @param day   the classes.Date's day.
-     * @return 1 if given date is not within 6 months in the future, -1/0 otherwise.
+     * @return 1 if the current date is later than the given date, -1 if otherwise, and 0 if they are the same.
      */
     public boolean checkIfWithinBounds(int month, int year, int day) {
-        //if date of birth is today or in the future, then is invalid
         Calendar aheadDate = Calendar.getInstance();
         Calendar currDate = Calendar.getInstance();
         currDate.set(Calendar.DAY_OF_MONTH, day);
@@ -162,7 +153,6 @@ public class Date implements Comparable<Date> {
     /**
      * Determine if the given date is in the past.
      * classes.Date cannot be in the past, as it would have already happened.
-     *
      * @param month the classes.Date's month.
      * @param year  the classes.Date's year.
      * @param day   the classes.Date's day.
@@ -178,16 +168,17 @@ public class Date implements Comparable<Date> {
 
         return currDate.compareTo(dateAtHand);
     }
-
+    /**
+     * Getter to retrieve today's date.
+     * @return today's day in integer format.
+     */
     public int getTodaysDate() {
-        //if date of birth is today or in the future, then is invalid
         Calendar current = Calendar.getInstance();
         return current.get(Calendar.DAY_OF_MONTH);
     }
 
     /**
      * Generate a string that properly formats the classes.Date.
-     *
      * @return a string containing the toString() message.
      */
     @Override
@@ -197,7 +188,6 @@ public class Date implements Comparable<Date> {
 
     /**
      * Return the classes.Date's month.
-     *
      * @return the classes.Date's month.
      */
     public int getMonth() {
@@ -206,7 +196,6 @@ public class Date implements Comparable<Date> {
 
     /**
      * Return the classes.Date's year.
-     *
      * @return the classes.Date's year.
      */
     public int getYear() {
@@ -215,7 +204,6 @@ public class Date implements Comparable<Date> {
 
     /**
      * Return the classes.Date's day.
-     *
      * @return the classes.Date's day.
      */
     public int getDay() {
@@ -225,8 +213,7 @@ public class Date implements Comparable<Date> {
     /**
      * Determine if two Dates are equal.
      * Compare the days and months and years.
-     * If any one these valus is not equal, the function is false.
-     *
+     * If any one these values is not equal, the function is false.
      * @param obj a Given object that will be compared to the "this" date if of proper type.
      * @return true if the Dates are equal, false otherwise.
      */
@@ -242,7 +229,6 @@ public class Date implements Comparable<Date> {
 
     /**
      * Compare two dates.
-     *
      * @param date the classes.Date to be compared.
      * @return 1 if "this" ahead of parameter, -1 if "this" before parameter, 0 if equal.
      */

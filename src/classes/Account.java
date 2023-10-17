@@ -55,14 +55,14 @@ public abstract class Account implements Comparable<Account> {
     }
 
     /**
-     * Overriden method to print out contents of specified account type.
+     * Overridden method to print out contents of specified account type.
      * @return in String format all information of the account.
      */
     @Override
     public abstract String toString();
 
     /**
-     * Overriden method to test if two accounts are equal.
+     * Overridden method to test if two accounts are equal.
      * @param obj the object to be tested if equal to current account.
      * @return in String format all information of the account, false otherwise.
      */

@@ -8,10 +8,10 @@ import java.text.DecimalFormat;
  * Implements methods from Account class to retrieve various information.
  * @author Abhishek Thakare, Adhit Thakur
  */
-
 public class Checking extends Account {
     public static final double INTEREST_RATE = 0.01;
     public static final double FEE = 12;
+    public static final double LIMIT = 1000;
 
     /**
      * Constructor to initialize a Checking account.
@@ -32,7 +32,7 @@ public class Checking extends Account {
     }
 
     /**
-     * Overriden method from Account class to display interest rate
+     * Overridden method from Account class to display interest rate
      * @return the interest rate of the Checking account.
      */
     @Override
@@ -41,14 +41,13 @@ public class Checking extends Account {
     }
 
     /**
-     * Overriden method from Account class to display fee.
+     * Overridden method from Account class to display fee.
      * If the balance of account is greater or equal to 1000, the fee is 0.0.
      * @return the monthly fee of the account.
      */
     @Override
     public double monthlyFee() {
-        //-1 means insufficient funds
-        if (this.balance >= 1000) {
+        if (this.balance >= LIMIT) {
             return 0.0;
         }
         else {
@@ -57,7 +56,7 @@ public class Checking extends Account {
     }
 
     /**
-     * Overriden method from Account class to compare the balances of accounts.
+     * Overridden method from Account class to compare the balances of accounts.
      * Compares the balances of two given accounts.
      * @return -1 if account balance is less than given account, 1 if greater, and 0 if equal.
      */
@@ -74,6 +73,11 @@ public class Checking extends Account {
         }
     }
 
+    /**
+     * Overridden method from Account class to print contents of the account.
+     * Uses getter methods and their toStrings to display the information.
+     * @return the String of all information of the account.
+     */
     @Override
     public String toString() {
         DecimalFormat df = new DecimalFormat("#,###.00");
@@ -82,6 +86,10 @@ public class Checking extends Account {
                 .toString() + "::Balance $" + df.format(getBalance());
     }
 
+    /**
+     * Gets the account type in string format for ease of processing.
+     * @return the String version of account type, Checking.
+     */
     public String returnType() {
         return "Checking";
     }

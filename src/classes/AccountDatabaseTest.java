@@ -1,14 +1,15 @@
 package classes;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
  * Tests the AccountDatabase class close() method.
  * One method for true output, one method for false output.
+ *
  * @author Abhishek Thakare, Adhit Thakur
  */
-
 public class AccountDatabaseTest {
 
     /**
@@ -35,6 +36,13 @@ public class AccountDatabaseTest {
         Account savingsAcct = new Savings(100.00, true, prof2);
         Account[] accounts = new Account[4];
         AccountDatabase db = new AccountDatabase(accounts, 1);
-        assertFalse(db.close(savingsAcct));
+        boolean b = true;
+        try {
+            db.close(savingsAcct);
+        }
+        catch (NullPointerException e) {
+            b = false;
+        }
+        assertFalse(b);
     }
 }

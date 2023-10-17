@@ -8,8 +8,8 @@ import java.text.DecimalFormat;
  * @author Abhishek Thakare, Adhit Thakur
  */
 public class AccountDatabase {
-    private Account[] accounts; //list of various types of accounts
-    private int numAcct; //number of accounts in the array
+    private Account[] accounts;
+    private int numAcct;
     public static final int NOT_FOUND = -1;
     public static final int ARRAY_SIZE_ADDER = 4;
 
@@ -42,7 +42,7 @@ public class AccountDatabase {
      * If the last element in the AccountDatabase is non-null, the array needs to grow.
      * Makes 4 more spaces for additional Accounts.
      */
-    private void grow() { //increase the capacity by 4
+    private void grow() {
         Account[] newAccounts = new Account
                 [this.accounts.length + ARRAY_SIZE_ADDER];
         for (int i = 0; i < this.accounts.length; i++) {
@@ -82,11 +82,10 @@ public class AccountDatabase {
      * @param account The Account to be added.
      * @return true if added to AccountDatabase, false otherwise.
      */
-    public boolean open(Account account) { //add a new account
+    public boolean open(Account account) {
         if (this.accounts[this.accounts.length - 1] != null) {
             grow();
         }
-
         for (int i = 0; i < this.accounts.length; i++) {
             if (this.accounts[i] == null) {
                 this.accounts[i] = account;
@@ -103,7 +102,7 @@ public class AccountDatabase {
      * @param account The Account to be removed.
      * @return true if Account was removed, false otherwise.
      */
-    public boolean close(Account account) { //remove the given account
+    public boolean close(Account account) {
         Account[] newAccounts = new Account[this.accounts.length];
         int j = find(account);
         if (j == NOT_FOUND) {
@@ -129,8 +128,7 @@ public class AccountDatabase {
      * @param account The Account whose balance is taken away from.
      * @return true if balance can be withdrawn, false otherwise.
      */
-    public boolean withdraw(Account account) { //false if insufficient fund
-        //increase money market amount of withdrawals here, use getter and setter methods
+    public boolean withdraw(Account account) {
         for (int i = 0; i < this.accounts.length; i++) {
             if (this.accounts[i].equals(account)) {
                 double currBal = account.getBalance();
@@ -149,7 +147,6 @@ public class AccountDatabase {
      * Add money to balance of specified account
      * Given an Account, add the balance given from the input into the account's balance.
      * @param account The Account whose balance is added onto.
-     * @return true if balance can be added, false otherwise.
      */
     public void deposit(Account account) {
         for (int i = 0; i < this.accounts.length; i++) {
@@ -166,7 +163,7 @@ public class AccountDatabase {
      * Goes in order of: Checking, College Checking, Money Market, Savings.
      * For similar account types, compare last name, then first name.
      */
-    public void printSorted() { //sort by account type and profile
+    public void printSorted() {
         System.out.println();
         System.out.println("*Accounts sorted by account type and profile.");
 
@@ -186,7 +183,7 @@ public class AccountDatabase {
      * Print accounts from account array with what their interests/fees would be.
      * Follows sorted order of Checking, College Checking, Money Market, then Savings.
      */
-    public void printFeesAndInterests() { //calculate interests/fees
+    public void printFeesAndInterests() {
         System.out.println();
         System.out.println("*list of accounts with fee and monthly interest");
         DecimalFormat df = new DecimalFormat("#,###.00");
@@ -211,7 +208,7 @@ public class AccountDatabase {
      * Print accounts from account array with their actual updated interests/fees/balance.
      * Follows sorted order of Checking, College Checking, Money Market, then Savings.
      */
-    public void printUpdatedBalances() { //apply the interests/fees
+    public void printUpdatedBalances() {
         System.out.println();
         System.out.println("*list of accounts with fees and " +
                 "interests applied.");
