@@ -9,12 +9,12 @@ public class CollegeChecking extends Checking {
     public static final double FEE = 0.00;
 
 
-    public CollegeChecking(double balance, CampusCode campus, Profile prof){
-        super(balance,prof);
+    public CollegeChecking(double balance, CampusCode campus, Profile prof) {
+        super(balance, prof);
         this.campus = campus;
     }
 
-    public CampusCode getCampus(){
+    public CampusCode getCampus() {
         return this.campus;
     }
 
@@ -30,23 +30,28 @@ public class CollegeChecking extends Checking {
 
     @Override
     public int compareTo(Account o) {
-        if(this.balance < o.balance){
+        if (this.balance < o.balance) {
             return -1;
         }
-        else if(this.balance > o.balance){
+        else if (this.balance > o.balance) {
             return 1;
         }
-        else{
+        else {
             return 0;
         }
     }
+
     @Override
     public String toString() {
         DecimalFormat df = new DecimalFormat("#,###.00");
-        return "College Checking::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + df.format(getBalance()) + "::" + this.getCampus().toString();
+        return "College Checking::" + this.getProfile().getFname()
+                + " " + this.getProfile().getLname() + " " +
+                this.getProfile().getDOB().toString() + "::Balance $"
+                + df.format(getBalance()) + "::" +
+                this.getCampus().toString();
     }
 
-    public String returnType(){
+    public String returnType() {
         return "College Checking";
     }
 }

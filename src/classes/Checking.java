@@ -11,7 +11,7 @@ public class Checking extends Account {
         this.holder = prof;
     }
 
-    public Checking(Profile prof){
+    public Checking(Profile prof) {
         this.holder = prof;
     }
 
@@ -23,7 +23,7 @@ public class Checking extends Account {
     @Override
     public double monthlyFee() {
         //-1 means insufficient funds
-        if (this.balance >= 1000){
+        if (this.balance >= 1000) {
             return 0.0;
         }
         else {
@@ -33,7 +33,7 @@ public class Checking extends Account {
 
     @Override
     public int compareTo(Account o) {
-        if (this.balance < o.balance){
+        if (this.balance < o.balance) {
             return -1;
         }
         else if (this.balance > o.balance) {
@@ -43,13 +43,16 @@ public class Checking extends Account {
             return 0;
         }
     }
+
     @Override
     public String toString() {
         DecimalFormat df = new DecimalFormat("#,###.00");
-        return "Checking::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + df.format(getBalance());
+        return "Checking::" + this.getProfile().getFname() + " " +
+                this.getProfile().getLname() + " " + this.getProfile().getDOB()
+                .toString() + "::Balance $" + df.format(getBalance());
     }
 
-    public String returnType(){
+    public String returnType() {
         return "Checking";
     }
 }

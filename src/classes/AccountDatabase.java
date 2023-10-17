@@ -2,9 +2,10 @@ package classes;
 import java.text.DecimalFormat;
 
 /**
- * use similar implementation of array as first project
+ * Class that manages an Array of accounts.
+ * Maintains an Account array through open, close, and print operations.
+ * @author Abhishek Thakare, Adhit Thakur
  */
-
 public class AccountDatabase {
     private Account[] accounts; //list of various types of accounts
     private int numAcct; //number of accounts in the array
@@ -12,9 +13,9 @@ public class AccountDatabase {
     public static final int ARRAY_SIZE_ADDER = 4;
 
     /**
-     * Constructor to initialize an EventCalendar.
-     * @param accounts The array of Events, initially size 4.
-     * @param numAcct The number of events, initially 0.
+     * Constructor to initialize an AccountDatabase.
+     * @param accounts The array of Accounts, initially size 4.
+     * @param numAcct  The number of accounts, initially 0.
      */
     public AccountDatabase(Account[] accounts, int numAcct) {
         this.accounts = accounts;
@@ -22,9 +23,9 @@ public class AccountDatabase {
     }
 
     /**
-     * Locate a given Event within the EventCalendar.
-     * @param account the event to be searched for.
-     * @return The index of the event if found, NOT_FOUND otherwise.
+     * Locate a given Account within the AccountDatabase.
+     * @param account the account to be searched for.
+     * @return The index of the account if found, NOT_FOUND otherwise.
      */
     private int find(Account account) {
         for (int i = 0; i < this.accounts.length; i++) {
@@ -41,12 +42,14 @@ public class AccountDatabase {
      * Makes 4 more spaces for additional Accounts.
      */
     private void grow() { //increase the capacity by 4
-        Account[] newAccounts = new Account[this.accounts.length + ARRAY_SIZE_ADDER];
+        Account[] newAccounts = new Account
+                [this.accounts.length + ARRAY_SIZE_ADDER];
         for (int i = 0; i < this.accounts.length; i++) {
             newAccounts[i] = this.accounts[i];
         }
         this.accounts = newAccounts;
     }
+
     /**
      * Check if Account is within the AccountDatabase.
      * @param account The Account to be checked for.
@@ -58,7 +61,14 @@ public class AccountDatabase {
             if (this.accounts[i] == null) {
                 return false;
             }
-            if (this.accounts[i].equals(account) && ((this.accounts[i].returnType().equals(account.returnType()) || ((this.accounts[i].returnType().equals("Checking") && account.returnType().equals("College Checking"))) || ((this.accounts[i].returnType().equals("College Checking") && account.returnType().equals("Checking")))))) {
+            if (this.accounts[i].equals(account) && ((this.accounts[i]
+                    .returnType().equals(account.returnType()) ||
+                    ((this.accounts[i].returnType().equals("Checking")
+                            && account.returnType()
+                            .equals("College Checking")))
+                    || ((this.accounts[i].returnType()
+                    .equals("College Checking") &&
+                    account.returnType().equals("Checking")))))) {
                 return true;
             }
         }
@@ -68,7 +78,7 @@ public class AccountDatabase {
     /**
      * Add an account to the AccountDatabase.
      * Checking if valid Account not done here.
-     * Simply adding to Calendar.
+     * Simply adding to AccountDatabase.
      * @param account The Account to be added.
      * @return true if added to AccountDatabase, false otherwise.
      */
@@ -113,30 +123,49 @@ public class AccountDatabase {
         return true;
     }
 
+    /**
+     * Remove money from balance of specified account.
+     * Given an Account, remove the balance given from the input of that account.
+     * @param account The Account whose balance is taken away from.
+     * @return true if balance can be withdrawn, false otherwise.
+     */
     public boolean withdraw(Account account) { //false if insufficient fund
-       //increase money market amount of withdrawals here, use getter and setter methods
-        for(int i = 0; i < this.accounts.length; i ++){
-            if(this.accounts[i].equals(account)){
+        //increase money market amount of withdrawals here, use getter and setter methods
+        for (int i = 0; i < this.accounts.length; i++) {
+            if (this.accounts[i].equals(account)) {
                 double currBal = account.getBalance();
-                if(currBal - account.getBalance() < 0){
+                if (currBal - account.getBalance() < 0) {
                     return false;
                 }
-                else{
+                else {
                     this.accounts[i].setBalance(currBal);
                 }
             }
         }
         return false;
     }
+
+    /**
+     * Add money to balance of specified account
+     * Given an Account, add the balance given from the input into the account's balance.
+     * @param account The Account whose balance is added onto.
+     * @return true if balance can be added, false otherwise.
+     */
     public void deposit(Account account) {
-        for(int i = 0; i < this.accounts.length; i ++) {
-            if(this.accounts[i].equals(account)) {
+        for (int i = 0; i < this.accounts.length; i++) {
+            if (this.accounts[i].equals(account)) {
                 double currBal = account.getBalance();
                 this.accounts[i].setBalance(currBal);
                 break;
             }
         }
     }
+
+    /**
+     * Print accounts from account array sorted by account type and profile
+     * Goes in order of: Checking, College Checking, Money Market, Savings.
+     * For similar account types, compare last name, then first name.
+     */
     public void printSorted() { //sort by account type and profile
         System.out.println();
         System.out.println("*Accounts sorted by account type and profile.");
@@ -147,17 +176,24 @@ public class AccountDatabase {
 
             Account temp = this.accounts[i];
             int j = i - 1;
-            while (j >= 0 && this.accounts[j].returnType().compareTo(temp.returnType()) > 0){
+            while (j >= 0 && this.accounts[j].returnType()
+                    .compareTo(temp.returnType()) > 0) {
                 this.accounts[j + 1] = this.accounts[j];
                 j--;
             }
 
-            while (j >= 0 && (this.accounts[j].getProfile().getLname().compareTo(temp.getProfile().getLname()) > 0 && this.accounts[j].returnType().equals(temp.returnType()))){
+            while (j >= 0 && (this.accounts[j].getProfile().getLname()
+                    .compareTo(temp.getProfile().getLname()) > 0 &&
+                    this.accounts[j].returnType().equals(temp.returnType()))) {
                 this.accounts[j + 1] = this.accounts[j];
                 j--;
             }
 
-            while (j >= 0 && this.accounts[j].getProfile().getFname().compareTo(temp.getProfile().getFname()) > 0 && this.accounts[j].getProfile().getLname().equals(temp.getProfile().getLname()) && this.accounts[j].returnType().equals(temp.returnType())){
+            while (j >= 0 && this.accounts[j].getProfile()
+                    .getFname().compareTo(temp.getProfile().getFname()) > 0
+                    && this.accounts[j].getProfile().getLname()
+                    .equals(temp.getProfile().getLname()) && this.accounts[j]
+                    .returnType().equals(temp.returnType())) {
                 this.accounts[j + 1] = this.accounts[j];
                 j--;
             }
@@ -174,6 +210,11 @@ public class AccountDatabase {
         System.out.println("*end of list.");
         System.out.println();
     }
+
+    /**
+     * Print accounts from account array with what their interests/fees would be.
+     * Follows sorted order of Checking, College Checking, Money Market, then Savings.
+     */
     public void printFeesAndInterests() { //calculate interests/fees
         System.out.println();
         System.out.println("*list of accounts with fee and monthly interest");
@@ -185,17 +226,25 @@ public class AccountDatabase {
 
             Account temp = this.accounts[i];
             int j = i - 1;
-            while (j >= 0 && this.accounts[j].returnType().compareTo(temp.returnType()) > 0){
+            while (j >= 0 && this.accounts[j].returnType()
+                    .compareTo(temp.returnType()) > 0) {
                 this.accounts[j + 1] = this.accounts[j];
                 j--;
             }
 
-            while (j >= 0 && (this.accounts[j].getProfile().getLname().compareTo(temp.getProfile().getLname()) > 0 && this.accounts[j].returnType().equals(temp.returnType()))){
+            while (j >= 0 && (this.accounts[j].getProfile().getLname()
+                    .compareTo(temp.getProfile().getLname()) > 0 &&
+                    this.accounts[j].returnType().equals(temp.returnType()))) {
                 this.accounts[j + 1] = this.accounts[j];
                 j--;
             }
 
-            while (j >= 0 && this.accounts[j].getProfile().getFname().compareTo(temp.getProfile().getFname()) > 0 && this.accounts[j].getProfile().getLname().equals(temp.getProfile().getLname()) && this.accounts[j].returnType().equals(temp.returnType())){
+            while (j >= 0 && this.accounts[j].getProfile().getFname()
+                    .compareTo(temp.getProfile().getFname()) > 0 &&
+                    this.accounts[j].getProfile().getLname()
+                            .equals(temp.getProfile().getLname())
+                    && this.accounts[j].returnType()
+                    .equals(temp.returnType())) {
                 this.accounts[j + 1] = this.accounts[j];
                 j--;
             }
@@ -207,23 +256,33 @@ public class AccountDatabase {
             if (this.accounts[x] == null) {
                 break;
             }
-            double interest = (this.accounts[x].getBalance() * this.accounts[x].monthlyInterest())/12;
-            System.out.println(this.accounts[x].toString() + "::fee $" + df.format(this.accounts[x].monthlyFee()) + "::monthly interest $" + df.format(interest));
+            double interest = (this.accounts[x].getBalance()
+                    * this.accounts[x].monthlyInterest()) / 12;
+            System.out.println(this.accounts[x].toString() + "::fee $" +
+                    df.format(this.accounts[x].monthlyFee()) +
+                    "::monthly interest $" + df.format(interest));
         }
         System.out.println("*end of list.");
         System.out.println();
     }
 
+    /**
+     * Print accounts from account array with their actual updated interests/fees/balance.
+     * Follows sorted order of Checking, College Checking, Money Market, then Savings.
+     */
     public void printUpdatedBalances() { //apply the interests/fees
         System.out.println();
-        System.out.println("*list of accounts with fees and interests applied.");
+        System.out.println("*list of accounts with fees and " +
+                "interests applied.");
         for (int x = 0; x < this.accounts.length; x++) {
-            if(this.accounts[x] == null) {
+            if (this.accounts[x] == null) {
                 break;
             }
-            double interest = (this.accounts[x].getBalance() * this.accounts[x].monthlyInterest())/12;
+            double interest = (this.accounts[x].getBalance() *
+                    this.accounts[x].monthlyInterest()) / 12;
             double fee = this.accounts[x].monthlyFee();
-            double currBalance = this.accounts[x].getBalance() - fee + interest;
+            double currBalance = this.accounts[x].getBalance() -
+                    fee + interest;
             this.accounts[x].setBalance(currBalance);
         }
 
@@ -234,12 +293,15 @@ public class AccountDatabase {
 
             Account temp = this.accounts[i];
             int j = i - 1;
-            while (j >= 0 && this.accounts[j].returnType().compareTo(temp.returnType()) > 0){
+            while (j >= 0 && this.accounts[j].returnType()
+                    .compareTo(temp.returnType()) > 0) {
                 this.accounts[j + 1] = this.accounts[j];
                 j--;
             }
 
-            while (j >= 0 && (this.accounts[j].getProfile().getLname().compareTo(temp.getProfile().getLname()) > 0 && this.accounts[j].returnType().equals(temp.returnType()))){
+            while (j >= 0 && (this.accounts[j].getProfile().getLname()
+                    .compareTo(temp.getProfile().getLname()) > 0 &&
+                    this.accounts[j].returnType().equals(temp.returnType()))) {
                 this.accounts[j + 1] = this.accounts[j];
                 j--;
             }
@@ -251,7 +313,7 @@ public class AccountDatabase {
             if (this.accounts[x] == null) {
                 break;
             }
-            if(this.accounts[x].returnType().equals("Money Market")){
+            if (this.accounts[x].returnType().equals("Money Market")) {
                 ((MoneyMarket) this.accounts[x]).resetWithdrawal();
             }
             System.out.println(this.accounts[x].toString());
@@ -260,58 +322,33 @@ public class AccountDatabase {
         System.out.println();
     }
 
+    /**
+     * Gets the number of accounts in the AccountDatabase.
+     * @return number of accounts in the AccountDatabase.
+     */
     public int getNumAcct() {
         return this.numAcct;
     }
 
-    public Account containsForClose(Account account, String type){
+    /**
+     * Gets the account that matches specified account.
+     * @return the account that matches the given account, null otherwise
+     */
+    public Account containsForClose(Account account, String type) {
         for (int i = 0; i < this.accounts.length; i++) {
             if (this.accounts[i] == null) {
                 return null;
             }
-            if (this.accounts[i].getProfile().getFname().toLowerCase().equals(account.getProfile().getFname().toLowerCase()) && this.accounts[i].getProfile().getLname().toLowerCase().equals(account.getProfile().getLname().toLowerCase()) && this.accounts[i].getProfile().getDOB().equals(account.getProfile().getDOB()) && this.accounts[i].returnType().equals(type)){
+            if (this.accounts[i].getProfile().getFname().toLowerCase()
+                    .equals(account.getProfile().getFname().toLowerCase())
+                    && this.accounts[i].getProfile().getLname().toLowerCase()
+                    .equals(account.getProfile().getLname().toLowerCase())
+                    && this.accounts[i].getProfile().getDOB()
+                    .equals(account.getProfile().getDOB()) &&
+                    this.accounts[i].returnType().equals(type)) {
                 return this.accounts[i];
             }
         }
         return null;
     }
-
-    public static void main(String[] args) {
-        Account[] accounts = new Account[4];
-        AccountDatabase db = new AccountDatabase(accounts, 4);
-
-        Date date1 = new Date ("11/21/2003");
-        Profile prof1 = new Profile("Bob", "Ross", date1);
-        Account checkingAcct = new Checking(200.0, prof1);
-        Account collegeAcct = new CollegeChecking(1500.00, CampusCode.ONE, prof1);
-
-        Date date2 = new Date ("10/15/2005");
-        Profile prof2 = new Profile("Babe", "Ruth", date2);
-        Account moneyAcct = new MoneyMarket(25000.00, true, 0, prof2);
-
-        Date date3 = new Date ("1/10/2000");
-        Profile prof3 = new Profile("Baba", "Sheik", date3);
-        Account savingsAcct = new Savings(10.00, true, prof3);
-
-        Date date4 = new Date ("5/19/2004");
-        Profile prof4 = new Profile("Bruce", "Wayne", date4);
-        Account savingsAcct2 = new Savings(10.00, false, prof4);
-
-        db.open(savingsAcct);
-        db.open(collegeAcct);
-        db.open(savingsAcct2);
-        db.open(moneyAcct);
-        db.open(checkingAcct);
-
-        //db.close(savingsAcct);
-        //db.close(moneyAcct);
-        //db.close(collegeAcct);
-
-        db.printSorted();
-        System.out.println("BREAK");
-        db.printFeesAndInterests();
-        System.out.println("BREAK");
-        db.printUpdatedBalances();
-    }
-
 }

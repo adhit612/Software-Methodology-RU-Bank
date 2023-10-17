@@ -56,7 +56,7 @@ public class TransactionManager {
         System.out.println("Transaction Manager is running.");
         while (true) {
             String line = scanner.nextLine();
-            line = line.replace('\t',' ');
+            line = line.replace('\t', ' ');
             if (line.equals("Q")) {
                 System.out.println("Transaction Manager is terminated.");
                 break;
@@ -69,86 +69,71 @@ public class TransactionManager {
             }
             if (contents.length == 0) {
 
-            }
-            else if (!isValidCommand(contents[0])) {
+            } else if (!isValidCommand(contents[0])) {
                 System.out.println("Invalid command!");
-            }
-            else if (!contents[0].equals("O") && collection == null) {
+            } else if (!contents[0].equals("O") && collection == null) {
                 System.out.println("Account Database is empty!");
-            }
-            else if (contents[0].equals("O") && collection == null && contents.length < 6) {
+            } else if (contents[0].equals("O") && collection == null && contents.length < 6) {
                 System.out.println("Missing data for opening an account.");
-            }
-            else if (contents[0].equals("O") && collection == null) {
-                if((!isNumeric(contents[5]))){
+            } else if (contents[0].equals("O") && collection == null) {
+                if ((!isNumeric(contents[5]))) {
                     System.out.println("Not a valid amount.");
-                }
-                else if(isNumeric(contents[5]) &&  Double.parseDouble(contents[5]) <= 0){
+                } else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
                     System.out.println("Initial deposit cannot be 0 or negative.");
-                }
-                else{
+                } else {
                     collection = new Account[4];
                     ad = new AccountDatabase(collection, 0);
-                    Profile prof = new Profile(contents[2],contents[3],new Date(contents[4]));
-                    if(contents[1].equals("C")){
-                        Account account = new Checking(Double.parseDouble(contents[5]),prof);
+                    Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
+                    if (contents[1].equals("C")) {
+                        Account account = new Checking(Double.parseDouble(contents[5]), prof);
                         ad.open(account);
                         System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(C)" + " opened.");
-                    }
-                    else if(contents[1].equals("CC")){
+                    } else if (contents[1].equals("CC")) {
                         CampusCode campusCode = null;
-                        if(contents[6].equals("0")){
+                        if (contents[6].equals("0")) {
                             campusCode = CampusCode.ZERO;
-                        }
-                        else if(contents[6].equals("1")){
+                        } else if (contents[6].equals("1")) {
                             campusCode = CampusCode.ONE;
-                        }
-                        else{
+                        } else {
                             campusCode = CampusCode.TWO;
                         }
 
-                        Account account = new CollegeChecking(Double.parseDouble(contents[5]),campusCode,prof);
+                        Account account = new CollegeChecking(Double.parseDouble(contents[5]), campusCode, prof);
                         ad.open(account);
                         System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(CC)" + " opened.");
-                    }
-                    else if(contents[1].equals("S")){
+                    } else if (contents[1].equals("S")) {
                         boolean isLoyal = false;
-                        if(contents[6].equals("1")){
+                        if (contents[6].equals("1")) {
                             isLoyal = true;
                         }
-                        Account account = new Savings(Double.parseDouble(contents[5]),isLoyal,prof);
+                        Account account = new Savings(Double.parseDouble(contents[5]), isLoyal, prof);
                         ad.open(account);
                         System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(S)" + " opened.");
-                    }
-                    else{
-                        if(Double.parseDouble(contents[5]) < 2000){
+                    } else {
+                        if (Double.parseDouble(contents[5]) < 2000) {
                             System.out.println("Minimum of $2000 to open a Money Market account.");
-                        }
-                        else{
-                            Account account = new MoneyMarket(Double.parseDouble(contents[5]),true,0,prof);
+                        } else {
+                            Account account = new MoneyMarket(Double.parseDouble(contents[5]), true, 0, prof);
                             ad.open(account);
                             System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(MM)" + " opened.");
                         }
                     }
                 }
-            }
-            else if(contents[0].equals("O")){
+            } else if (contents[0].equals("O")) {
                 DecimalFormat decimalFormat = new DecimalFormat("#.##");
-                if((!isNumeric(contents[5]))){
+                if ((!isNumeric(contents[5]))) {
                     System.out.println("Not a valid amount.");
-                }
-                else if(isNumeric(contents[5]) &&  Double.parseDouble(contents[5]) <= 0){
+                } else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
                     System.out.println("Initial deposit cannot be 0 or negative.");
-                }
-                else{
+                } else {
                     Account account = null;
-                    Profile prof = new Profile(contents[2],contents[3],new Date(contents[4]));
+                    Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
                     Date date = new Date(contents[4]);
-                    if(!date.isValid()){
+                    if (!date.isValid()) {
                         System.out.println("DOB invalid: " + contents[4] + " not a valid calendar date!");
                         continue;
                     }
-                    if(!date.checkIfWithinBounds(date.getMonth(),date.getYear(),date.getDay())){
+                    if (!date.checkIfWithinBounds(date.getMonth(), date.getYear(), date.getDay())) {
                         System.out.println("DOB invalid: " + contents[4] + " cannot be today or a future day.");
                         continue;
                     }
@@ -156,7 +141,7 @@ public class TransactionManager {
                     int age = 2023 - date.getYear();
                     int dayDiff = date.getDay() - date.getTodaysDate();
                     //System.out.println("todays date " + date.getTodaysDate() + " age " + age + " dayDiff " + dayDiff );
-                    if(age <= 16 && dayDiff >= 0){
+                    if (age <= 16 && dayDiff >= 0) {
                         System.out.println("DOB invalid: " + contents[4] + " under 16.");
                         continue;
                     }
@@ -164,258 +149,215 @@ public class TransactionManager {
                     double res = 0.0;
                     try {
                         res = decimalFormat.parse(contents[5]).doubleValue();
-                    }catch(ParseException e){
+                    } catch (ParseException e) {
                         e.printStackTrace();
                     }
 
-                    if(contents[1].equals("C")){
-                        account = new Checking(res,prof);
-                    }
-                    else if(contents[1].equals("CC")){
-                        if(age >= 24 && (date.getDay() - date.getTodaysDate() >= 0)){
+                    if (contents[1].equals("C")) {
+                        account = new Checking(res, prof);
+                    } else if (contents[1].equals("CC")) {
+                        if (age >= 24 && (date.getDay() - date.getTodaysDate() >= 0)) {
                             System.out.println("DOB invalid: " + contents[4] + " over 24.");
                             continue;
                         }
                         CampusCode campusCode = null;
-                        if(contents[6].equals("0")){
+                        if (contents[6].equals("0")) {
                             campusCode = CampusCode.ZERO;
-                        }
-                        else if(contents[6].equals("1")){
+                        } else if (contents[6].equals("1")) {
                             campusCode = CampusCode.ONE;
-                        }
-                        else if(contents[6].equals("2")){
+                        } else if (contents[6].equals("2")) {
                             campusCode = CampusCode.TWO;
-                        }
-                        else{
+                        } else {
                             System.out.println("Invalid campus code.");
                             continue;
                         }
 
-                        account = new CollegeChecking(res,campusCode,prof);
-                    }
-                    else if(contents[1].substring(0,1).equals("S")){
+                        account = new CollegeChecking(res, campusCode, prof);
+                    } else if (contents[1].substring(0, 1).equals("S")) {
                         boolean isLoyal = false;
-                        if(contents[6].equals("1")){
+                        if (contents[6].equals("1")) {
                             isLoyal = true;
                         }
-                        account = new Savings(res,isLoyal,prof);
-                    }
-                    else if(contents[1].equals("MM")){
-                        if(Double.parseDouble(contents[5]) < 2000){
+                        account = new Savings(res, isLoyal, prof);
+                    } else if (contents[1].equals("MM")) {
+                        if (Double.parseDouble(contents[5]) < 2000) {
                             System.out.println("Minimum of $2000 to open a Money Market account.");
                             continue;
-                        }
-                        else{
-                            account = new MoneyMarket(res,true,0,prof);
+                        } else {
+                            account = new MoneyMarket(res, true, 0, prof);
                         }
                     }
 
-                    if(ad.contains(account)) {
+                    if (ad.contains(account)) {
                         System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(" + contents[1] + ") is already in the database.");
-                    }
-                    else{
+                    } else {
                         ad.open(account);
-                        if(contents[1].equals("MM") || contents[1].equals("CC")){
+                        if (contents[1].equals("MM") || contents[1].equals("CC")) {
                             System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(" + contents[1] + ") opened.");
-                        }
-                        else {
+                        } else {
                             System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(" + contents[1].substring(0, 1) + ") opened.");
                         }
                     }
                 }
-            }
-            else if(contents[0].equals("P")){
+            } else if (contents[0].equals("P")) {
                 ad.printSorted();
-            }
-            else if(contents[0].equals("C")){
-                if(contents.length < 5){
+            } else if (contents[0].equals("C")) {
+                if (contents.length < 5) {
                     System.out.println("Missing data for closing an account.");
                     continue;
-                }
-                else {
-                    Profile prof = new Profile(contents[2],contents[3], new Date(contents[4]));
+                } else {
+                    Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
                     Date date = new Date(contents[4]);
-                    if(!date.checkIfWithinBounds(date.getMonth(),date.getYear(),date.getDay())){
+                    if (!date.checkIfWithinBounds(date.getMonth(), date.getYear(), date.getDay())) {
                         System.out.println("DOB invalid: " + date.toString() + " cannot be today or a future day.");
                         continue;
-                    }
-                    else{
+                    } else {
                         Account ac = new Checking(prof);
                         String type = "";
-                        if(contents[1].equals("C")){
+                        if (contents[1].equals("C")) {
                             type = "Checking";
-                        }
-                        else if(contents[1].equals("CC")){
+                        } else if (contents[1].equals("CC")) {
                             type = "College Checking";
-                        }
-                        else if(contents[1].equals("S")){
+                        } else if (contents[1].equals("S")) {
                             type = "Savings";
-                        }
-                        else if(contents[1].equals("MM")){
+                        } else if (contents[1].equals("MM")) {
                             type = "Money Market";
                         }
 
-                        if(ad.containsForClose(ac,type) == null){
+                        if (ad.containsForClose(ac, type) == null) {
                             System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") is not in the database.");
-                        }
-                        else {
-                            ad.close(ad.containsForClose(ac,type));
+                        } else {
+                            ad.close(ad.containsForClose(ac, type));
                             System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") has been closed.");
                         }
                     }
                 }
-            }
-            else if(contents[0].equals("D")){
-                Profile prof = new Profile(contents[2],contents[3],new Date(contents[4]));
+            } else if (contents[0].equals("D")) {
+                Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
 
                 String type = "";
-                if(contents[1].equals("CC")){
+                if (contents[1].equals("CC")) {
                     type = "College Checking";
-                }
-                else if(contents[1].substring(0,1).equals("C")){
+                } else if (contents[1].substring(0, 1).equals("C")) {
                     type = "Checking";
-                }
-                else if(contents[1].substring(0,1).equals("S")){
+                } else if (contents[1].substring(0, 1).equals("S")) {
                     type = "Savings";
-                }
-                else if(contents[1].equals("MM")){
+                } else if (contents[1].equals("MM")) {
                     type = "Money Market";
                 }
 
                 Account acc = new Checking(prof);
 
-                if(ad.containsForClose(acc,type) == null){
-                    if((!isNumeric(contents[5]))){
+                if (ad.containsForClose(acc, type) == null) {
+                    if ((!isNumeric(contents[5]))) {
                         System.out.println("Not a valid amount.");
-                    }
-                    else if(isNumeric(contents[5]) &&  Double.parseDouble(contents[5]) <= 0){
+                    } else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
                         System.out.println("Deposit - amount cannot be 0 or negative.");
-                    }
-                    else {
-                        if(contents[1].equals("CC") || contents[1].equals("MM")) {
+                    } else {
+                        if (contents[1].equals("CC") || contents[1].equals("MM")) {
                             System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") is not in the database.");
-                        }
-                        else{
-                            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0,1) + ") is not in the database.");
+                        } else {
+                            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") is not in the database.");
                         }
                     }
-                }
-                else{
+                } else {
                     DecimalFormat decimalFormat = new DecimalFormat("#.##");
-                    if((!isNumeric(contents[5]))){
+                    if ((!isNumeric(contents[5]))) {
                         System.out.println("Not a valid amount.");
-                    }
-                    else if(isNumeric(contents[5]) &&  Double.parseDouble(contents[5]) <= 0){
+                    } else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
                         System.out.println("Deposit - amount cannot be 0 or negative.");
-                    }
-                    else{
+                    } else {
                         double res = 0.0;
                         try {
                             res = decimalFormat.parse(contents[5]).doubleValue();
-                        }catch(ParseException e){
+                        } catch (ParseException e) {
                             e.printStackTrace();
                         }
 
-                        Account account = ad.containsForClose(acc,type);
+                        Account account = ad.containsForClose(acc, type);
                         double balance = account.getBalance();
                         balance += res;
                         account.setBalance(balance);
                         ad.deposit(account);
-                        if(contents[1].equals("CC") || contents[1].equals("MM")) {
+                        if (contents[1].equals("CC") || contents[1].equals("MM")) {
                             System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") Deposit - balance updated.");
-                        }
-                        else{
-                            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0,1) + ") Deposit - balance updated.");
+                        } else {
+                            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") Deposit - balance updated.");
                         }
                     }
                 }
-            }
-            else if(contents[0].equals("W")){
+            } else if (contents[0].equals("W")) {
                 //System.out.println("Contents2: " + contents[2] + " Contents3: " + contents[3] + " Contents4: " + contents[4]);
-                Profile prof = new Profile(contents[2],contents[3],new Date(contents[4]));
+                Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
 
                 String type = "";
-                if(contents[1].equals("CC")){
+                if (contents[1].equals("CC")) {
                     type = "College Checking";
-                }
-                else if(contents[1].substring(0,1).equals("C")){
+                } else if (contents[1].substring(0, 1).equals("C")) {
                     type = "Checking";
-                }
-                else if(contents[1].substring(0,1).equals("S")){
+                } else if (contents[1].substring(0, 1).equals("S")) {
                     type = "Savings";
-                }
-                else if(contents[1].equals("MM")){
+                } else if (contents[1].equals("MM")) {
                     type = "Money Market";
                 }
 
                 Account acc = new Checking(prof);
 
-                if(ad.containsForClose(acc,type) == null){
-                    if((!isNumeric(contents[5]))){
+                if (ad.containsForClose(acc, type) == null) {
+                    if ((!isNumeric(contents[5]))) {
                         System.out.println("Not a valid amount.");
-                    }
-                    else if(isNumeric(contents[5]) &&  Double.parseDouble(contents[5]) <= 0){
+                    } else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
                         System.out.println("Withdraw - amount cannot be 0 or negative.");
-                    }
-                    else {
-                        if(contents[1].equals("CC") || contents[1].equals("MM")) {
+                    } else {
+                        if (contents[1].equals("CC") || contents[1].equals("MM")) {
                             System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") is not in the database.");
-                        }
-                        else{
-                            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0,1) + ") is not in the database.");
+                        } else {
+                            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") is not in the database.");
                         }
                     }
-                }
-                else{
+                } else {
                     DecimalFormat decimalFormat = new DecimalFormat("#.##");
-                    if((!isNumeric(contents[5]))){
+                    if ((!isNumeric(contents[5]))) {
                         System.out.println("Not a valid amount.");
-                    }
-                    else if(isNumeric(contents[5]) &&  Double.parseDouble(contents[5]) <= 0){
+                    } else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
                         System.out.println("Withdraw - amount cannot be 0 or negative.");
-                    }
-                    else{
+                    } else {
                         double res = 0.0;
                         try {
                             res = decimalFormat.parse(contents[5]).doubleValue();
-                        }catch(ParseException e){
+                        } catch (ParseException e) {
                             e.printStackTrace();
                         }
 
-                        Account account = ad.containsForClose(acc,type);
+                        Account account = ad.containsForClose(acc, type);
                         double balance = account.getBalance();
 
-                        if(balance - res < 0){
-                            if(contents[1].equals("CC") || contents[1].equals("MM")) {
+                        if (balance - res < 0) {
+                            if (contents[1].equals("CC") || contents[1].equals("MM")) {
                                 System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") Withdraw - insufficient fund.");
+                            } else {
+                                System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") Withdraw - insufficient fund.");
                             }
-                            else{
-                                System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0,1) + ") Withdraw - insufficient fund.");
-                            }
-                        }
-                        else{
+                        } else {
                             balance -= res;
                             account.setBalance(balance);
                             ad.withdraw(account);
-                            if(contents[1].equals("CC") || contents[1].equals("MM")) {
-                                if(contents[1].equals("MM")){
+                            if (contents[1].equals("CC") || contents[1].equals("MM")) {
+                                if (contents[1].equals("MM")) {
                                     ((MoneyMarket) account).setWithdrawal();
                                 }
 
                                 System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") Withdraw - balance updated.");
-                            }
-                            else{
-                                System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0,1) + ") Withdraw - balance updated.");
+                            } else {
+                                System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") Withdraw - balance updated.");
                             }
                         }
 
                     }
                 }
-            }
-            else if(contents[0].equals("PI")){
+            } else if (contents[0].equals("PI")) {
                 ad.printFeesAndInterests();
-            }
-            else if(contents[0].equals("UB")){
+            } else if (contents[0].equals("UB")) {
                 ad.printUpdatedBalances();
             }
 //            else {
@@ -427,17 +369,16 @@ public class TransactionManager {
         scanner.close();
     }
 
-    public static boolean isNumeric(String strNum){
-        if(strNum == null){
+    private static boolean isNumeric(String strNum) {
+        if (strNum == null) {
             return false;
         }
 
-        try{
+        try {
             double d = Double.parseDouble(strNum);
-        }catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             return false;
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             return false;
         }
         return true;
@@ -631,6 +572,7 @@ public class TransactionManager {
     /**
      * Check if the given command is of proper type.
      * Determining if the command is one of the 6 possible inputs.
+     *
      * @param str Command to be checked.
      * @return true if command is one of 6 possible inputs, otherwise false.
      */

@@ -15,6 +15,7 @@ public class AccountDatabaseTest {
         db.open(checkAcct);
         assertTrue(db.close(checkAcct));
     }
+
     @Test
     public void closeFalse() {
         Profile prof2 = new Profile("Lionel", "Messi", new Date("10/20/2003"));

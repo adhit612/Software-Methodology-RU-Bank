@@ -7,20 +7,20 @@ public class Savings extends Account {
     public static final double FEE = 25;
     protected boolean isLoyal; //loyal customer status
 
-    public Savings(double balance,boolean isLoyal, Profile prof){
+    public Savings(double balance, boolean isLoyal, Profile prof) {
         this.balance = balance;
         this.isLoyal = isLoyal;
         this.holder = prof;
     }
 
-    public boolean getLoyal(){
+    public boolean getLoyal() {
         return this.isLoyal;
     }
 
     @Override
     public double monthlyInterest() {
         double finalRate = INTEREST_RATE;
-        if(isLoyal){
+        if (isLoyal) {
             finalRate += 0.25;
             return finalRate;
         }
@@ -29,23 +29,23 @@ public class Savings extends Account {
 
     @Override
     public double monthlyFee() {
-        if(this.balance >= 500){
+        if (this.balance >= 500) {
             return 0.0;
         }
-        else{
+        else {
             return FEE;
         }
     }
 
     @Override
     public int compareTo(Account o) {
-        if(this.balance < o.balance){
+        if (this.balance < o.balance) {
             return -1;
         }
-        else if(this.balance > o.balance){
+        else if (this.balance > o.balance) {
             return 1;
         }
-        else{
+        else {
             return 0;
         }
     }
@@ -53,16 +53,22 @@ public class Savings extends Account {
     @Override
     public String toString() {
         DecimalFormat df = new DecimalFormat("#,###.00");
-        if(this.getLoyal()) {
-            return "Savings::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + df.format(this.getBalance()) + "::is loyal";
+        if (this.getLoyal()) {
+            return "Savings::" + this.getProfile().getFname() + " " +
+                    this.getProfile().getLname() + " " + this.getProfile()
+                    .getDOB().toString() + "::Balance $" +
+                    df.format(this.getBalance()) + "::is loyal";
         }
-        else{
-            return "Savings::" + this.getProfile().getFname() + " " + this.getProfile().getLname() + " " + this.getProfile().getDOB().toString() + "::Balance $" + df.format(getBalance());
+        else {
+            return "Savings::" + this.getProfile().getFname() + " " +
+                    this.getProfile().getLname() + " " + this.getProfile()
+                    .getDOB().toString() + "::Balance $" +
+                    df.format(getBalance());
         }
 
     }
 
-    public String returnType(){
+    public String returnType() {
         return "Savings";
     }
 }
