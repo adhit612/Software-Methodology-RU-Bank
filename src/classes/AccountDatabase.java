@@ -57,7 +57,6 @@ public class AccountDatabase {
      * @return true if Account is in AccountDatabase, false otherwise.
      */
     public boolean contains(Account account) {
-
         for (int i = 0; i < this.accounts.length; i++) {
             if (this.accounts[i] == null) {
                 return false;
@@ -170,37 +169,8 @@ public class AccountDatabase {
     public void printSorted() { //sort by account type and profile
         System.out.println();
         System.out.println("*Accounts sorted by account type and profile.");
-        for (int i = 1; i < this.accounts.length; i++) {
-            if (this.accounts[i] == null) {
-                break;
-            }
 
-            Account temp = this.accounts[i];
-            int j = i - 1;
-            while (j >= 0 && this.accounts[j].returnType()
-                    .compareTo(temp.returnType()) > 0) {
-                this.accounts[j + 1] = this.accounts[j];
-                j--;
-            }
-
-            while (j >= 0 && (this.accounts[j].getProfile().getLname()
-                    .compareTo(temp.getProfile().getLname()) > 0 &&
-                    this.accounts[j].returnType().equals(temp.returnType()))) {
-                this.accounts[j + 1] = this.accounts[j];
-                j--;
-            }
-
-            while (j >= 0 && this.accounts[j].getProfile()
-                    .getFname().compareTo(temp.getProfile().getFname()) > 0
-                    && this.accounts[j].getProfile().getLname()
-                    .equals(temp.getProfile().getLname()) && this.accounts[j]
-                    .returnType().equals(temp.returnType())) {
-                this.accounts[j + 1] = this.accounts[j];
-                j--;
-            }
-
-            this.accounts[j + 1] = temp;
-        }
+        insertionSortDefault(this.accounts);
 
         for (int x = 0; x < this.accounts.length; x++) {
             if (this.accounts[x] == null) {
@@ -220,38 +190,8 @@ public class AccountDatabase {
         System.out.println();
         System.out.println("*list of accounts with fee and monthly interest");
         DecimalFormat df = new DecimalFormat("#,###.00");
-        for (int i = 1; i < this.accounts.length; i++) {
-            if (this.accounts[i] == null) {
-                break;
-            }
 
-            Account temp = this.accounts[i];
-            int j = i - 1;
-            while (j >= 0 && this.accounts[j].returnType()
-                    .compareTo(temp.returnType()) > 0) {
-                this.accounts[j + 1] = this.accounts[j];
-                j--;
-            }
-
-            while (j >= 0 && (this.accounts[j].getProfile().getLname()
-                    .compareTo(temp.getProfile().getLname()) > 0 &&
-                    this.accounts[j].returnType().equals(temp.returnType()))) {
-                this.accounts[j + 1] = this.accounts[j];
-                j--;
-            }
-
-            while (j >= 0 && this.accounts[j].getProfile().getFname()
-                    .compareTo(temp.getProfile().getFname()) > 0 &&
-                    this.accounts[j].getProfile().getLname()
-                            .equals(temp.getProfile().getLname())
-                    && this.accounts[j].returnType()
-                    .equals(temp.returnType())) {
-                this.accounts[j + 1] = this.accounts[j];
-                j--;
-            }
-
-            this.accounts[j + 1] = temp;
-        }
+        insertionSortFeesAndInterest(this.accounts);
 
         for (int x = 0; x < this.accounts.length; x++) {
             if (this.accounts[x] == null) {
@@ -287,28 +227,7 @@ public class AccountDatabase {
             this.accounts[x].setBalance(currBalance);
         }
 
-        for (int i = 1; i < this.accounts.length; i++) {
-            if (this.accounts[i] == null) {
-                break;
-            }
-
-            Account temp = this.accounts[i];
-            int j = i - 1;
-            while (j >= 0 && this.accounts[j].returnType()
-                    .compareTo(temp.returnType()) > 0) {
-                this.accounts[j + 1] = this.accounts[j];
-                j--;
-            }
-
-            while (j >= 0 && (this.accounts[j].getProfile().getLname()
-                    .compareTo(temp.getProfile().getLname()) > 0 &&
-                    this.accounts[j].returnType().equals(temp.returnType()))) {
-                this.accounts[j + 1] = this.accounts[j];
-                j--;
-            }
-
-            this.accounts[j + 1] = temp;
-        }
+        insertionSortUb(this.accounts);
 
         for (int x = 0; x < this.accounts.length; x++) {
             if (this.accounts[x] == null) {
@@ -351,5 +270,111 @@ public class AccountDatabase {
             }
         }
         return null;
+    }
+
+    /**
+     * Performs the sorting needed for the "P" command.
+     * @param accounts The accounts array to be sorted.
+     */
+    public void insertionSortDefault(Account [] accounts) {
+        for (int i = 1; i < this.accounts.length; i++) {
+            if (this.accounts[i] == null) {
+                break;
+            }
+
+            Account temp = this.accounts[i];
+            int j = i - 1;
+            while (j >= 0 && this.accounts[j].returnType()
+                    .compareTo(temp.returnType()) > 0) {
+                this.accounts[j + 1] = this.accounts[j];
+                j--;
+            }
+
+            while (j >= 0 && (this.accounts[j].getProfile().getLname()
+                    .compareTo(temp.getProfile().getLname()) > 0 &&
+                    this.accounts[j].returnType().equals(temp.returnType()))) {
+                this.accounts[j + 1] = this.accounts[j];
+                j--;
+            }
+
+            while (j >= 0 && this.accounts[j].getProfile()
+                    .getFname().compareTo(temp.getProfile().getFname()) > 0
+                    && this.accounts[j].getProfile().getLname()
+                    .equals(temp.getProfile().getLname()) && this.accounts[j]
+                    .returnType().equals(temp.returnType())) {
+                this.accounts[j + 1] = this.accounts[j];
+                j--;
+            }
+
+            this.accounts[j + 1] = temp;
+        }
+    }
+
+    /**
+     * Performs the sorting needed for the "PI" command.
+     * @param accounts The accounts array to be sorted.
+     */
+    public void insertionSortFeesAndInterest(Account [] accounts) {
+        for (int i = 1; i < this.accounts.length; i++) {
+            if (this.accounts[i] == null) {
+                break;
+            }
+
+            Account temp = this.accounts[i];
+            int j = i - 1;
+            while (j >= 0 && this.accounts[j].returnType()
+                    .compareTo(temp.returnType()) > 0) {
+                this.accounts[j + 1] = this.accounts[j];
+                j--;
+            }
+
+            while (j >= 0 && (this.accounts[j].getProfile().getLname()
+                    .compareTo(temp.getProfile().getLname()) > 0 &&
+                    this.accounts[j].returnType().equals(temp.returnType()))) {
+                this.accounts[j + 1] = this.accounts[j];
+                j--;
+            }
+
+            while (j >= 0 && this.accounts[j].getProfile().getFname()
+                    .compareTo(temp.getProfile().getFname()) > 0 &&
+                    this.accounts[j].getProfile().getLname()
+                            .equals(temp.getProfile().getLname())
+                    && this.accounts[j].returnType()
+                    .equals(temp.returnType())) {
+                this.accounts[j + 1] = this.accounts[j];
+                j--;
+            }
+
+            this.accounts[j + 1] = temp;
+        }
+    }
+
+    /**
+     * Performs the sorting needed for the "UB" command.
+     * @param accounts The accounts array to be sorted.
+     */
+    public void insertionSortUb(Account [] accounts){
+        for (int i = 1; i < this.accounts.length; i++) {
+            if (this.accounts[i] == null) {
+                break;
+            }
+
+            Account temp = this.accounts[i];
+            int j = i - 1;
+            while (j >= 0 && this.accounts[j].returnType()
+                    .compareTo(temp.returnType()) > 0) {
+                this.accounts[j + 1] = this.accounts[j];
+                j--;
+            }
+
+            while (j >= 0 && (this.accounts[j].getProfile().getLname()
+                    .compareTo(temp.getProfile().getLname()) > 0 &&
+                    this.accounts[j].returnType().equals(temp.returnType()))) {
+                this.accounts[j + 1] = this.accounts[j];
+                j--;
+            }
+
+            this.accounts[j + 1] = temp;
+        }
     }
 }

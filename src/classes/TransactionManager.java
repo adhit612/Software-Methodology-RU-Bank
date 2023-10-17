@@ -6,48 +6,418 @@ import java.util.StringTokenizer;
 import java.text.DecimalFormat;
 
 /**
- * class should handle all Java exceptions and invalid data before it calls the methods in classes.AccountDatabase
+ * Class that manages, updates, manipulates, and displays an Account Database based on client input
+ * @author Abhishek Thakare, Adhit Thakur
  */
 
 public class TransactionManager {
 
     /**
-     * O Command => CC and S accounts have 7 separate tokens, C and MM accounts have 6
-     * MM requires $2000 to open, and is set to loyal customer (1)(true) by default
-     * Names NOT case-sensitive
-     * classes.Date of birth is on today or future => invalid date
-     *
-     * C Command => 5 separate tokens
-     *
-     * D Command => 6 separate tokens
-     * Reject on invalid input entered
-     *
-     * W Command => 6 separate tokens
-     * Check if there is enough money to be removed
-     *
-     * UB => apply fees and interest earned
-     * Resets # of withdrawals in money market to 0
+     * Method to process O command on null
+     * @param contents Line entered in command line
+     * @param collection Current collection of Accounts
+     * @param ad AccountDatabase holding all current data
      */
+    private void oCommandNull(String [] contents, Account [] collection, AccountDatabase ad){
+        Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
+        if (contents[1].equals("C")) {
+            Account account = new Checking(Double.parseDouble(contents[5]), prof);
+            ad.open(account);
+            System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(C)" + " opened.");
+        }
+        else if (contents[1].equals("CC")) {
+            CampusCode campusCode = null;
+            if (contents[6].equals("0")) {
+                campusCode = CampusCode.ZERO;
+            }
+            else if (contents[6].equals("1")) {
+                campusCode = CampusCode.ONE;
+            }
+            else {
+                campusCode = CampusCode.TWO;
+            }
+            Account account = new CollegeChecking(Double.parseDouble(contents[5]), campusCode, prof);
+            ad.open(account);
+            System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(CC)" + " opened.");
+        }
+        else if (contents[1].equals("S")) {
+            boolean isLoyal = false;
+            if (contents[6].equals("1")) {
+                isLoyal = true;
+            }
+            Account account = new Savings(Double.parseDouble(contents[5]), isLoyal, prof);
+            ad.open(account);
+            System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(S)" + " opened.");
+        }
+        else {
+            if (Double.parseDouble(contents[5]) < 2000) {
+                System.out.println("Minimum of $2000 to open a Money Market account.");
+            }
+            else {
+                Account account = new MoneyMarket(Double.parseDouble(contents[5]), true, 0, prof);
+                ad.open(account);
+                System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(MM)" + " opened.");
+            }
+        }
+    }
 
     /**
-     * TO DO:
-     *Test Checkings
-     *Test classes.Savings
-     * Test classes.CollegeChecking
-     *Test classes.MoneyMarket
-     * Add check for money market in transactionmanager scanner to make sure minimum deposit is $2000
-     *
-     * COMPLETED:
-     * classes.Checking class implementation
-     * classes.Savings class implementation
-     * classes.CollegeChecking class implementation
-     * classes.MoneyMarket class implementation
+     * Method to process O command after creation of Account Database
+     * @param contents Line entered in command line
+     * @param collection Current collection of Accounts
+     * @param ad AccountDatabase holding all current data
      */
+    private void oCommand(String [] contents, Account [] collection, AccountDatabase ad){
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        if ((!isNumeric(contents[5]))) {
+            System.out.println("Not a valid amount.");
+        }
+        else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
+            System.out.println("Initial deposit cannot be 0 or negative.");
+        }
+        else {
+            oCommandHelper(contents,collection,ad,decimalFormat);
+        }
+    }
 
     /**
-     * Runner for Scanner input processing.
-     * Taking in user input until "Q" is entered.
-     * Processing each command at a very high level.
+     * Method to assist with O command non-null processing
+     * @param contents Line entered in command line
+     * @param collection Current collection of Accounts
+     * @param ad AccountDatabase holding all current data
+     * @param decimalFormat Formatter to maintain 2 sig figs
+     */
+    private void oCommandHelper(String [] contents, Account [] collection, AccountDatabase ad, DecimalFormat decimalFormat){
+        Account account = null;
+        Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
+        Date date = new Date(contents[4]);
+        if (!date.isValid()) {
+            System.out.println("DOB invalid: " + contents[4] + " not a valid calendar date!");
+            return;
+        }
+        if (!date.checkIfWithinBounds(date.getMonth(), date.getYear(), date.getDay())) {
+            System.out.println("DOB invalid: " + contents[4] + " cannot be today or a future day.");
+            return;
+        }
+        int age = 2023 - date.getYear();
+        int dayDiff = date.getDay() - date.getTodaysDate();
+        //System.out.println("todays date " + date.getTodaysDate() + " age " + age + " dayDiff " + dayDiff );
+        if (age <= 16 && dayDiff >= 0) {
+            System.out.println("DOB invalid: " + contents[4] + " under 16.");
+            return;
+        }
+        double res = 0.0;
+        try {
+            res = decimalFormat.parse(contents[5]).doubleValue();
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+        }
+        oCommandHelperTwo(contents,collection,ad,decimalFormat,account,res,prof,date,age);
+    }
+
+    /**
+     * Second layer method to help with O command non-null processing
+     * Splitting up functionality
+     * @param contents Line entered in command line
+     * @param collection Current collection of Accounts
+     * @param ad AccountDatabase holding all current data
+     * @param decimalFormat Formatter to maintain 2 sig figs
+     * @param account Account that will be added
+     * @param res Value that is the current balance
+     * @param prof Profile that matches with the current account
+     * @param date Date of the current account
+     * @param age Age of the person with the account
+     */
+    private void oCommandHelperTwo(String [] contents, Account [] collection, AccountDatabase ad, DecimalFormat decimalFormat, Account account, double res, Profile prof, Date date, int age){
+        if (contents[1].equals("C")) {
+            account = new Checking(res, prof);
+        }
+        else if (contents[1].equals("CC")) {
+            if (age >= 24 && (date.getDay() - date.getTodaysDate() >= 0)) {
+                System.out.println("DOB invalid: " + contents[4] + " over 24.");
+                return;
+            }
+            CampusCode campusCode = null;
+            if (contents[6].equals("0")) {
+                campusCode = CampusCode.ZERO;
+            }
+            else if (contents[6].equals("1")) {
+                campusCode = CampusCode.ONE;
+            }
+            else if (contents[6].equals("2")) {
+                campusCode = CampusCode.TWO;
+            }
+            else {
+                System.out.println("Invalid campus code.");
+                return;
+            }
+            account = new CollegeChecking(res, campusCode, prof);
+        }
+        else if (contents[1].substring(0, 1).equals("S")) {
+            boolean isLoyal = false;
+            if (contents[6].equals("1")) {
+                isLoyal = true;
+            }
+            account = new Savings(res, isLoyal, prof);
+        }
+        else if (contents[1].equals("MM")) {
+            if (Double.parseDouble(contents[5]) < 2000) {
+                System.out.println("Minimum of $2000 to open a Money Market account.");
+                return;
+            } else {
+                account = new MoneyMarket(res, true, 0, prof);
+            }
+        }
+        oCommandFinalCheck(contents,collection,ad,account);
+    }
+
+    /**
+     * Method to perform final checks and operations on the given account and account database
+     * @param contents Line entered in command line
+     * @param collection Current collection of Accounts
+     * @param ad AccountDatabase holding all current data
+     * @param account Account that will be added
+     */
+    private void oCommandFinalCheck(String [] contents, Account [] collection, AccountDatabase ad, Account account){
+        if (ad.contains(account)) {
+            System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(" + contents[1] + ") is already in the database.");
+        }
+        else {
+            ad.open(account);
+            if (contents[1].equals("MM") || contents[1].equals("CC")) {
+                System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(" + contents[1] + ") opened.");
+            }
+            else {
+                System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(" + contents[1].substring(0, 1) + ") opened.");
+            }
+        }
+    }
+
+    /**
+     * Method to perform C command processing
+     * @param contents Line entered in command line
+     * @param collection Current collection of Accounts
+     * @param ad AccountDatabase holding all current data
+     */
+    private void cCommand(String [] contents, Account [] collection, AccountDatabase ad){
+        if (contents.length < 5) {
+            System.out.println("Missing data for closing an account.");
+        }
+        else {
+            Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
+            Date date = new Date(contents[4]);
+            if (!date.checkIfWithinBounds(date.getMonth(), date.getYear(), date.getDay())) {
+                System.out.println("DOB invalid: " + date.toString() + " cannot be today or a future day.");
+            }
+            else {
+                Account ac = new Checking(prof);
+                String type = "";
+                if (contents[1].equals("C")) {
+                    type = "Checking";
+                }
+                else if (contents[1].equals("CC")) {
+                    type = "College Checking";
+                }
+                else if (contents[1].equals("S")) {
+                    type = "Savings";
+                }
+                else if (contents[1].equals("MM")) {
+                    type = "Money Market";
+                }
+                if (ad.containsForClose(ac, type) == null) {
+                    System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") is not in the database.");
+                }
+                else {
+                    ad.close(ad.containsForClose(ac, type));
+                    System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") has been closed.");
+                }
+            }
+        }
+    }
+
+    /**
+     * Methot to set the account type to a String
+     * @param contents Line entered in command line
+     * @param type Type of the current account (C, CC, etc.)
+     * @return String that will be assigned to the passed in type parameter
+     */
+    private String setType(String [] contents, String type){
+        if (contents[1].equals("CC")) {
+            type = "College Checking";
+        }
+        else if (contents[1].substring(0, 1).equals("C")) {
+            type = "Checking";
+        }
+        else if (contents[1].substring(0, 1).equals("S")) {
+            type = "Savings";
+        }
+        else if (contents[1].equals("MM")) {
+            type = "Money Market";
+        }
+        return type;
+    }
+
+    /**
+     * Method that prints errors that occur with D commnand data
+     * @param contents Line entered in command line
+     * @param collection Current collection of Accounts
+     * @param ad AccountDatabase holding all current data
+     * @param prof Profile of the current account
+     */
+    private void dCommandErrorPrinter(String [] contents, Account [] collection, AccountDatabase ad, Profile prof){
+        if ((!isNumeric(contents[5]))) {
+            System.out.println("Not a valid amount.");
+        }
+        else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
+            System.out.println("Deposit - amount cannot be 0 or negative.");
+        }
+        else {
+            if (contents[1].equals("CC") || contents[1].equals("MM")) {
+                System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") is not in the database.");
+            }
+            else {
+                System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") is not in the database.");
+            }
+        }
+    }
+
+    /**
+     * Method that processes the D command functionality
+     * @param contents Line entered in command line
+     * @param collection Current collection of Accounts
+     * @param ad AccountDatabase holding all current data
+     */
+    private void dCommand(String [] contents, Account [] collection, AccountDatabase ad){
+        Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
+        String type = "";
+        type = setType(contents,type);
+        Account acc = new Checking(prof);
+        if (ad.containsForClose(acc, type) == null) {
+            dCommandErrorPrinter(contents,collection,ad,prof);
+        }
+        else {
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+            if ((!isNumeric(contents[5]))) {
+                System.out.println("Not a valid amount.");
+            }
+            else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
+                System.out.println("Deposit - amount cannot be 0 or negative.");
+            }
+            else {
+                double res = 0.0;
+                try {
+                    res = decimalFormat.parse(contents[5]).doubleValue();
+                }
+                catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Account account = ad.containsForClose(acc, type);
+                double balance = account.getBalance();
+                balance += res;
+                account.setBalance(balance);
+                ad.deposit(account);
+                if (contents[1].equals("CC") || contents[1].equals("MM")) {
+                    System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") Deposit - balance updated.");
+                }
+                else {
+                    System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") Deposit - balance updated.");
+                }
+            }
+        }
+    }
+
+    /**
+     * Method to determine if the current account that is trying to withdraw from is invalid
+     * @param contents Line entered in command line
+     * @param collection Current collection of Accounts
+     * @param ad AccountDatabase holding all current data
+     * @param prof Profile of the current account
+     */
+    private void wCommandErrorPrinter(String [] contents, Account [] collection, AccountDatabase ad, Profile prof){
+        if ((!isNumeric(contents[5]))) {
+            System.out.println("Not a valid amount.");
+        }
+        else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
+            System.out.println("Withdraw - amount cannot be 0 or negative.");
+        }
+        else {
+            if (contents[1].equals("CC") || contents[1].equals("MM")) {
+                System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") is not in the database.");
+            }
+            else {
+                System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") is not in the database.");
+            }
+        }
+    }
+
+    /**
+     * Method to process the W withdraw command
+     * @param contents Line entered in command line
+     * @param collection Current collection of Accounts
+     * @param ad AccountDatabase holding all current data
+     */
+    private void wCommand(String [] contents, Account [] collection, AccountDatabase ad){
+        Profile prof = new Profile(contents[2], contents[3], new Date(contents[4])); String type = ""; type = setType(contents,type);Account acc = new Checking(prof);DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        if (ad.containsForClose(acc, type) == null) {
+            wCommandErrorPrinter(contents,collection,ad,prof);
+        }
+        else {
+            if ((!isNumeric(contents[5]))) {
+                System.out.println("Not a valid amount.");
+            }
+            else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
+                System.out.println("Withdraw - amount cannot be 0 or negative.");
+            }
+            else {
+                double res = 0.0;
+                try {
+                    res = decimalFormat.parse(contents[5]).doubleValue();
+                }
+                catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Account account = ad.containsForClose(acc, type);
+                double balance = account.getBalance();
+                if (balance - res < 0) {
+                    wCommandFinalErrorHandler(contents,collection,ad,prof);
+                }
+                else {
+                    balance -= res;
+                    account.setBalance(balance);
+                    ad.withdraw(account);
+                    if (contents[1].equals("CC") || contents[1].equals("MM")) {
+                        if (contents[1].equals("MM")) {
+                            ((MoneyMarket) account).setWithdrawal();
+                        }
+                        System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") Withdraw - balance updated.");
+                    }
+                    else {
+                        System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") Withdraw - balance updated.");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Method to check for any final errors with W command
+     * @param contents Line entered in command line
+     * @param collection Current collection of Accounts
+     * @param ad AccountDatabase holding all current data
+     * @param prof Profile of the current account
+     */
+    private void wCommandFinalErrorHandler(String [] contents, Account [] collection, AccountDatabase ad, Profile prof){
+        if (contents[1].equals("CC") || contents[1].equals("MM")) {
+            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") Withdraw - insufficient fund.");
+        }
+        else {
+            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") Withdraw - insufficient fund.");
+        }
+    }
+
+    /**
+     * Run method to process all commands entered by client
      */
     public void run() {
         Account[] collection = null;
@@ -68,307 +438,87 @@ public class TransactionManager {
                 contents[w++] = tokenizer.nextToken();
             }
             if (contents.length == 0) {
-
-            } else if (!isValidCommand(contents[0])) {
-                System.out.println("Invalid command!");
-            } else if (!contents[0].equals("O") && collection == null) {
-                System.out.println("Account Database is empty!");
-            } else if (contents[0].equals("O") && collection == null && contents.length < 6) {
-                System.out.println("Missing data for opening an account.");
-            } else if (contents[0].equals("O") && collection == null) {
+            }
+            else if(invalidCommandProcessor(contents,collection,ad)){
+            }
+            else if (contents[0].equals("O") && collection == null) {
                 if ((!isNumeric(contents[5]))) {
                     System.out.println("Not a valid amount.");
-                } else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
+                }
+                else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
                     System.out.println("Initial deposit cannot be 0 or negative.");
-                } else {
+                }
+                else {
                     collection = new Account[4];
                     ad = new AccountDatabase(collection, 0);
-                    Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
-                    if (contents[1].equals("C")) {
-                        Account account = new Checking(Double.parseDouble(contents[5]), prof);
-                        ad.open(account);
-                        System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(C)" + " opened.");
-                    } else if (contents[1].equals("CC")) {
-                        CampusCode campusCode = null;
-                        if (contents[6].equals("0")) {
-                            campusCode = CampusCode.ZERO;
-                        } else if (contents[6].equals("1")) {
-                            campusCode = CampusCode.ONE;
-                        } else {
-                            campusCode = CampusCode.TWO;
-                        }
-
-                        Account account = new CollegeChecking(Double.parseDouble(contents[5]), campusCode, prof);
-                        ad.open(account);
-                        System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(CC)" + " opened.");
-                    } else if (contents[1].equals("S")) {
-                        boolean isLoyal = false;
-                        if (contents[6].equals("1")) {
-                            isLoyal = true;
-                        }
-                        Account account = new Savings(Double.parseDouble(contents[5]), isLoyal, prof);
-                        ad.open(account);
-                        System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(S)" + " opened.");
-                    } else {
-                        if (Double.parseDouble(contents[5]) < 2000) {
-                            System.out.println("Minimum of $2000 to open a Money Market account.");
-                        } else {
-                            Account account = new MoneyMarket(Double.parseDouble(contents[5]), true, 0, prof);
-                            ad.open(account);
-                            System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(MM)" + " opened.");
-                        }
-                    }
+                    oCommandNull(contents,collection,ad);
                 }
-            } else if (contents[0].equals("O")) {
-                DecimalFormat decimalFormat = new DecimalFormat("#.##");
-                if ((!isNumeric(contents[5]))) {
-                    System.out.println("Not a valid amount.");
-                } else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
-                    System.out.println("Initial deposit cannot be 0 or negative.");
-                } else {
-                    Account account = null;
-                    Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
-                    Date date = new Date(contents[4]);
-                    if (!date.isValid()) {
-                        System.out.println("DOB invalid: " + contents[4] + " not a valid calendar date!");
-                        continue;
-                    }
-                    if (!date.checkIfWithinBounds(date.getMonth(), date.getYear(), date.getDay())) {
-                        System.out.println("DOB invalid: " + contents[4] + " cannot be today or a future day.");
-                        continue;
-                    }
-
-                    int age = 2023 - date.getYear();
-                    int dayDiff = date.getDay() - date.getTodaysDate();
-                    //System.out.println("todays date " + date.getTodaysDate() + " age " + age + " dayDiff " + dayDiff );
-                    if (age <= 16 && dayDiff >= 0) {
-                        System.out.println("DOB invalid: " + contents[4] + " under 16.");
-                        continue;
-                    }
-
-                    double res = 0.0;
-                    try {
-                        res = decimalFormat.parse(contents[5]).doubleValue();
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (contents[1].equals("C")) {
-                        account = new Checking(res, prof);
-                    } else if (contents[1].equals("CC")) {
-                        if (age >= 24 && (date.getDay() - date.getTodaysDate() >= 0)) {
-                            System.out.println("DOB invalid: " + contents[4] + " over 24.");
-                            continue;
-                        }
-                        CampusCode campusCode = null;
-                        if (contents[6].equals("0")) {
-                            campusCode = CampusCode.ZERO;
-                        } else if (contents[6].equals("1")) {
-                            campusCode = CampusCode.ONE;
-                        } else if (contents[6].equals("2")) {
-                            campusCode = CampusCode.TWO;
-                        } else {
-                            System.out.println("Invalid campus code.");
-                            continue;
-                        }
-
-                        account = new CollegeChecking(res, campusCode, prof);
-                    } else if (contents[1].substring(0, 1).equals("S")) {
-                        boolean isLoyal = false;
-                        if (contents[6].equals("1")) {
-                            isLoyal = true;
-                        }
-                        account = new Savings(res, isLoyal, prof);
-                    } else if (contents[1].equals("MM")) {
-                        if (Double.parseDouble(contents[5]) < 2000) {
-                            System.out.println("Minimum of $2000 to open a Money Market account.");
-                            continue;
-                        } else {
-                            account = new MoneyMarket(res, true, 0, prof);
-                        }
-                    }
-
-                    if (ad.contains(account)) {
-                        System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(" + contents[1] + ") is already in the database.");
-                    } else {
-                        ad.open(account);
-                        if (contents[1].equals("MM") || contents[1].equals("CC")) {
-                            System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(" + contents[1] + ") opened.");
-                        } else {
-                            System.out.println(account.getProfile().getFname() + " " + account.getProfile().getLname() + " " + account.getProfile().getDOB() + "(" + contents[1].substring(0, 1) + ") opened.");
-                        }
-                    }
-                }
-            } else if (contents[0].equals("P")) {
-                ad.printSorted();
-            } else if (contents[0].equals("C")) {
-                if (contents.length < 5) {
-                    System.out.println("Missing data for closing an account.");
-                    continue;
-                } else {
-                    Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
-                    Date date = new Date(contents[4]);
-                    if (!date.checkIfWithinBounds(date.getMonth(), date.getYear(), date.getDay())) {
-                        System.out.println("DOB invalid: " + date.toString() + " cannot be today or a future day.");
-                        continue;
-                    } else {
-                        Account ac = new Checking(prof);
-                        String type = "";
-                        if (contents[1].equals("C")) {
-                            type = "Checking";
-                        } else if (contents[1].equals("CC")) {
-                            type = "College Checking";
-                        } else if (contents[1].equals("S")) {
-                            type = "Savings";
-                        } else if (contents[1].equals("MM")) {
-                            type = "Money Market";
-                        }
-
-                        if (ad.containsForClose(ac, type) == null) {
-                            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") is not in the database.");
-                        } else {
-                            ad.close(ad.containsForClose(ac, type));
-                            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") has been closed.");
-                        }
-                    }
-                }
-            } else if (contents[0].equals("D")) {
-                Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
-
-                String type = "";
-                if (contents[1].equals("CC")) {
-                    type = "College Checking";
-                } else if (contents[1].substring(0, 1).equals("C")) {
-                    type = "Checking";
-                } else if (contents[1].substring(0, 1).equals("S")) {
-                    type = "Savings";
-                } else if (contents[1].equals("MM")) {
-                    type = "Money Market";
-                }
-
-                Account acc = new Checking(prof);
-
-                if (ad.containsForClose(acc, type) == null) {
-                    if ((!isNumeric(contents[5]))) {
-                        System.out.println("Not a valid amount.");
-                    } else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
-                        System.out.println("Deposit - amount cannot be 0 or negative.");
-                    } else {
-                        if (contents[1].equals("CC") || contents[1].equals("MM")) {
-                            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") is not in the database.");
-                        } else {
-                            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") is not in the database.");
-                        }
-                    }
-                } else {
-                    DecimalFormat decimalFormat = new DecimalFormat("#.##");
-                    if ((!isNumeric(contents[5]))) {
-                        System.out.println("Not a valid amount.");
-                    } else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
-                        System.out.println("Deposit - amount cannot be 0 or negative.");
-                    } else {
-                        double res = 0.0;
-                        try {
-                            res = decimalFormat.parse(contents[5]).doubleValue();
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-
-                        Account account = ad.containsForClose(acc, type);
-                        double balance = account.getBalance();
-                        balance += res;
-                        account.setBalance(balance);
-                        ad.deposit(account);
-                        if (contents[1].equals("CC") || contents[1].equals("MM")) {
-                            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") Deposit - balance updated.");
-                        } else {
-                            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") Deposit - balance updated.");
-                        }
-                    }
-                }
-            } else if (contents[0].equals("W")) {
-                //System.out.println("Contents2: " + contents[2] + " Contents3: " + contents[3] + " Contents4: " + contents[4]);
-                Profile prof = new Profile(contents[2], contents[3], new Date(contents[4]));
-
-                String type = "";
-                if (contents[1].equals("CC")) {
-                    type = "College Checking";
-                } else if (contents[1].substring(0, 1).equals("C")) {
-                    type = "Checking";
-                } else if (contents[1].substring(0, 1).equals("S")) {
-                    type = "Savings";
-                } else if (contents[1].equals("MM")) {
-                    type = "Money Market";
-                }
-
-                Account acc = new Checking(prof);
-
-                if (ad.containsForClose(acc, type) == null) {
-                    if ((!isNumeric(contents[5]))) {
-                        System.out.println("Not a valid amount.");
-                    } else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
-                        System.out.println("Withdraw - amount cannot be 0 or negative.");
-                    } else {
-                        if (contents[1].equals("CC") || contents[1].equals("MM")) {
-                            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") is not in the database.");
-                        } else {
-                            System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") is not in the database.");
-                        }
-                    }
-                } else {
-                    DecimalFormat decimalFormat = new DecimalFormat("#.##");
-                    if ((!isNumeric(contents[5]))) {
-                        System.out.println("Not a valid amount.");
-                    } else if (isNumeric(contents[5]) && Double.parseDouble(contents[5]) <= 0) {
-                        System.out.println("Withdraw - amount cannot be 0 or negative.");
-                    } else {
-                        double res = 0.0;
-                        try {
-                            res = decimalFormat.parse(contents[5]).doubleValue();
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-
-                        Account account = ad.containsForClose(acc, type);
-                        double balance = account.getBalance();
-
-                        if (balance - res < 0) {
-                            if (contents[1].equals("CC") || contents[1].equals("MM")) {
-                                System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") Withdraw - insufficient fund.");
-                            } else {
-                                System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") Withdraw - insufficient fund.");
-                            }
-                        } else {
-                            balance -= res;
-                            account.setBalance(balance);
-                            ad.withdraw(account);
-                            if (contents[1].equals("CC") || contents[1].equals("MM")) {
-                                if (contents[1].equals("MM")) {
-                                    ((MoneyMarket) account).setWithdrawal();
-                                }
-
-                                System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1] + ") Withdraw - balance updated.");
-                            } else {
-                                System.out.println(prof.getFname() + " " + prof.getLname() + " " + prof.getDOB() + "(" + contents[1].substring(0, 1) + ") Withdraw - balance updated.");
-                            }
-                        }
-
-                    }
-                }
-            } else if (contents[0].equals("PI")) {
-                ad.printFeesAndInterests();
-            } else if (contents[0].equals("UB")) {
-                ad.printUpdatedBalances();
             }
-//            else {
-//                runThroughNonEdgeCases(collection,calendar,contents);
-//            }
-
-
+            else{
+                commandProcessor(contents,collection,ad);
+            }
         }
         scanner.close();
     }
 
+    /**
+     * Checking if the given command is invalid, or not of one of the given types
+     * @param contents Line entered in command line
+     * @param collection Current collection of Accounts
+     * @param ad AccountDatabase holding all current data
+     * @return true if command is valid, false otherwise
+     */
+    private boolean invalidCommandProcessor(String [] contents, Account [] collection, AccountDatabase ad){
+        if (!isValidCommand(contents[0])) {
+            System.out.println("Invalid command!");
+            return true;
+        }
+        else if (!contents[0].equals("O") && collection == null) {
+            System.out.println("Account Database is empty!");
+            return true;
+        }
+        else if (contents[0].equals("O") && collection == null && contents.length < 6) {
+            System.out.println("Missing data for opening an account.");
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method that processes all fundamental commands, then branches into helpers
+     * @param contents Line entered in command line
+     * @param collection Current collection of Accounts
+     * @param ad AccountDatabase holding all current data
+     */
+    private void commandProcessor(String [] contents, Account [] collection, AccountDatabase ad){
+        if (contents[0].equals("O")) {
+            oCommand(contents,collection,ad);
+        }
+        else if (contents[0].equals("P")) {
+            ad.printSorted();
+        }
+        else if (contents[0].equals("C")) {
+            cCommand(contents,collection,ad);
+        }
+        else if (contents[0].equals("D")) {
+            dCommand(contents,collection,ad);
+        }
+        else if (contents[0].equals("W")) {
+            wCommand(contents,collection,ad);
+        }
+        else if (contents[0].equals("PI")) {
+            ad.printFeesAndInterests();
+        }
+        else if (contents[0].equals("UB")) {
+            ad.printUpdatedBalances();
+        }
+    }
+
+    /**
+     * Method that determines if a given String is a number or is of another type
+     * @param strNum String that is processed
+     * @return true if given String is a number, false otherwise
+     */
     private static boolean isNumeric(String strNum) {
         if (strNum == null) {
             return false;
@@ -385,191 +535,6 @@ public class TransactionManager {
     }
 
     /**
-     * Determining what to output to user after all edge cases are tackled.
-     * @param collection Event[] to be used.
-     * @param calendar EventCalendar to be altered.
-     * @param contents User input line to be processed.
-     */
-    /*
-    public void runThroughNonEdgeCases(Account [] collection, AccountDatabase calendar, String [] contents){
-        if (contents[0].equals("A")) {
-            aCommandAfterInit(collection,calendar,contents);
-        }
-        else if (!contents[0].equals("A") && calendar.getNumEvents() == 0) {
-            System.out.println("Event calendar is empty!");
-        }
-        else if (contents[0].equals("R")) {
-            rCommandChecker(collection,calendar,contents);
-        }
-        else if (contents[0].equals("P")) {
-            System.out.println("* Event calendar *");
-            pCommandChecker(collection,calendar,contents);
-            System.out.println("* end of event calendar *");
-        }
-        else if (contents[0].equals("PE")) {
-            System.out.println("* Event calendar by event date and start time *");
-            peCommandChecker(collection,calendar,contents);
-            System.out.println("* end of event calendar *");
-        }
-        else if (contents[0].equals("PC")) {
-            System.out.println("* Event calendar by campus and building *");
-            pcCommandChecker(collection,calendar,contents);
-            System.out.println("* end of event calendar *");
-        }
-        else if(contents[0].equals("PD")) {
-            System.out.println("* Event calendar by department *");
-            pdCommandChecker(collection,calendar,contents);
-            System.out.println("* end of event calendar *");
-        }
-    }
-    */
-
-    /**
-     * Generate the appropriate message when adding event to a currently null calendar.
-     * @param collection Event[] to be used.
-     * @param calendar EventCalendar to be altered.
-     * @param contents User input line to be processed.
-     */
-
-    /*
-    public void aCommandInit(Event [] collection, EventCalendar calendar, String [] contents){
-        if (isValidEvent(contents).equals("valid")) {
-            Event event = createEvent(contents);
-            calendar.add(event);
-            System.out.println("Event added to the calendar.");
-        }
-        else {
-            System.out.println(isValidEvent(contents));
-        }
-    }
-
-     */
-
-    /**
-     * Generate appropriate message when adding event to a non-null calendar.
-     * @param collection Event[] to be used.
-     * @param calendar EventCalendar to be altered.
-     * @param contents User input line to be processed.
-     */
-
-    /*
-    public void aCommandAfterInit(Event [] collection, EventCalendar calendar, String [] contents){
-        if (isValidEvent(contents).equals("valid")) {
-            Event event = createEvent(contents);
-            if (calendar.contains(event)) {
-                System.out.println("The event is already on the calendar");
-            }
-            else {
-                calendar.add(event);
-                System.out.println("Event added to the calendar.");
-            }
-        }
-        else {
-            System.out.println(isValidEvent(contents));
-        }
-    }
-
-     */
-
-    /**
-     * Package the remove command processing.
-     * Determine whether Event can be removed and performing the operation.
-     * @param collection Event[] to be used.
-     * @param calendar EventCalendar to be altered.
-     * @param contents User input line to be processed.
-     */
-    /*
-    public void rCommandChecker(Event [] collection, EventCalendar calendar, String [] contents){
-        if (isValidRemove(contents).equals("valid")) {
-            Event event = createEventForRemove(contents);
-            if (calendar.contains(event)) {
-                calendar.remove(event);
-                System.out.println("Event has been removed from the calendar!");
-            }
-            else {
-                System.out.println("Cannot remove; event is not in the calendar!");
-            }
-        }
-        else {
-            System.out.println(isValidRemove(contents));
-        }
-    }
-
-     */
-
-    /**
-     * Process printing the unsorted calendar if the "P" command is correctly entered.
-     * @param collection Event[] to be used.
-     * @param calendar EventCalendar to be altered.
-     * @param contents User input line to be processed.
-     */
-    /*
-    public void pCommandChecker(Event [] collection, EventCalendar calendar, String [] contents){
-        if (contents.length == 1) {
-            calendar.print();
-        }
-        else {
-            System.out.println(contents[0] + " is an invalid command!");
-        }
-    }
-
-     */
-
-    /**
-     * Process printing the calendar sorted by date and timeslot if the "PE" command is correctly entered.
-     * @param collection Event[] to be used.
-     * @param calendar EventCalendar to be altered.
-     * @param contents User input line to be processed.
-     */
-    /*
-    public void peCommandChecker(Event [] collection, EventCalendar calendar, String [] contents) {
-        if (contents.length == 1) {
-            calendar.printByDate();
-        }
-        else {
-            System.out.println(contents[0] + " is an invalid command!");
-        }
-    }
-
-     */
-
-    /**
-     * Process printing the calendar sorted by campus and building if the "PC" command is correctly entered.
-     * @param collection Event[] to be used.
-     * @param calendar EventCalendar to be altered.
-     * @param contents User input line to be processed.
-     */
-    /*
-    public void pcCommandChecker(Event [] collection, EventCalendar calendar, String [] contents) {
-        if (contents.length == 1) {
-            calendar.printByCampus();
-        }
-        else {
-            System.out.println(contents[0] + " is an invalid command!");
-        }
-    }
-
-     */
-
-    /**
-     * Process printing the calendar sorted by department if the "PD" command is correctly entered.
-     * @param collection Event[] to be used.
-     * @param calendar EventCalendar to be altered.
-     * @param contents User input line to be processed.
-     */
-    /*
-    public void pdCommandChecker(Event [] collection, EventCalendar calendar, String [] contents) {
-        if (contents.length == 1) {
-            calendar.printByDepartment();
-        }
-        else {
-            System.out.println(contents[0] + " is an invalid command!");
-        }
-    }
-
-     */
-
-    /**
      * Check if the given command is of proper type.
      * Determining if the command is one of the 6 possible inputs.
      *
@@ -583,210 +548,4 @@ public class TransactionManager {
         }
         return false;
     }
-
-    /**
-     * Determine if the event to be added is valid.
-     * Process each component of Event to ensure it is fully valid.
-     * Generate appropriate message.
-     * @param contents Command to be checked.
-     * @return Error message depending on the issue with Event parameter, otherwise "valid".
-     */
-    /*
-    private String isValidEvent(String[] contents) {
-        Date date = new Date(contents[1]);
-        if (!date.isValid()) {
-            return contents[1] + ": Invalid calendar date!";
-        }
-        else if (date.checkIfWithinBounds(date.getMonth(),
-                date.getYear(), date.getDay()) > 0) {
-            return contents[1] + ": Event date must be within 6 months!";
-        }
-        else if (date.checkIfInPast(date.getMonth(),
-                date.getYear(), date.getDay()) > 0) {
-            return contents[1] + ": Event date must be a future date!";
-        }
-        if (!contents[2].toLowerCase().equals("morning")
-                && !contents[2].toLowerCase()
-                .equals("afternoon") && !contents[2].toLowerCase()
-                .equals("evening")) {
-            return "Invalid time slot!";
-        }
-        String roomToLower = contents[3].toLowerCase();
-        if (!roomToLower.equals("hll114") && !roomToLower.equals("arc103")
-                && !roomToLower.equals("be_aud") && !roomToLower.equals("til232")
-                && !roomToLower.equals("ab2225") && !roomToLower.equals("mu302")) {
-            return "Invalid location!";
-        }
-        String departmentToLower = contents[4].toLowerCase();
-        if (!departmentToLower.equals("cs") && !departmentToLower.equals("ee")
-                && !departmentToLower.equals("iti") && !departmentToLower.equals("math")
-                && !departmentToLower.equals("bait")) {
-            return "Invalid contact information!";
-        }
-        Contact contact = new Contact(Department.CS, contents[5]);
-        if (!contact.isValid()) {
-            return "Invalid contact information!";
-        }
-        int duration = Integer.parseInt(contents[6]);
-        if (duration < 30 || duration > 120) {
-            return "Event duration must be at least 30 minutes"
-                    + " and at most 120 minutes";
-        }
-        return "valid";
-    }
-
-     */
-
-    /**
-     * Determines if the event to be removed is valid.
-     * Checks if Date, Timeslot, and Location are proper.
-     * @param contents The remove command to be processed.
-     * @return Error message depending on the issue with Event parameter, otherwise "valid".
-     */
-    /*
-    private String isValidRemove(String[] contents) {
-        Date date = new Date(contents[1]);
-        if (!date.isValid()) {
-            return contents[1] + ": Invalid calendar date!";
-        }
-        else if (date.checkIfWithinBounds(date.getMonth(),
-                date.getYear(), date.getDay()) > 0) {
-            return contents[1] + ": Event date must be within 6 months!";
-        }
-        else if (date.checkIfInPast(date.getMonth(),
-                date.getYear(), date.getDay()) > 0) {
-            return contents[1] + ": Event date must be a future date!";
-        }
-        if (!contents[2].toLowerCase().equals("morning") && !contents[2].toLowerCase()
-                .equals("afternoon") && !contents[2].toLowerCase().equals("evening")) {
-            return "Invalid time slot!";
-        }
-        String roomToLower = contents[3].toLowerCase();
-        if (!roomToLower.equals("hll114") && !roomToLower.equals("arc103")
-                && !roomToLower.equals("be_aud") && !roomToLower.equals("til232")
-                && !roomToLower.equals("ab2225") && !roomToLower.equals("mu302")) {
-            return "Invalid location!";
-        }
-        return "valid";
-    }
-
-     */
-
-    /**
-     * Creating an event based on user input to add.
-     * Once Event is determined to be valid, generate Event.
-     * Add that event to the EventCalendar.
-     * @param contents Command to be processed into an Event.
-     * @return the Event that will be added to the EventCalendar.
-     */
-    /*
-    private Event createEvent(String[] contents) {
-        Date date = new Date(contents[1]);
-        Timeslot startTime = createTimeSlot(contents[2]);
-        Location location = createLocation(contents[3]);
-        Department department = createDepartment(contents[4]);
-        Contact contact = new Contact(department, contents[5]);
-        int duration = Integer.parseInt(contents[6]);
-        return new Event(date, startTime, location, contact, duration);
-    }
-
-     */
-
-    /**
-     * Creating an event based on user input to remove.
-     * Once Event is determined to be valid, generate Event.
-     * Remove that event from the EventCalendar.
-     * @param contents Command to be processed into an Event.
-     * @return the Event that will be added to the EventCalendar.
-     */
-    /*
-    private Event createEventForRemove(String[] contents) {
-        Date date = new Date(contents[1]);
-        Timeslot startTime = createTimeSlot(contents[2]);
-        Location location = createLocation(contents[3]);
-        return new Event(date, startTime, location);
-    }
-
-     */
-
-    /**
-     * Create a Timeslot for an Event based on user input.
-     * Once Event is determined to be valid, create its Timeslot.
-     * Turn the String input into a Timeslot enum constant.
-     * @param str The string to be converted to Timeslot enum.
-     * @return the Timeslot enum constant that was generated.
-     */
-    /*
-    private Timeslot createTimeSlot(String str) {
-        if (str.toLowerCase().equals("morning")) {
-            return Timeslot.MORNING;
-        }
-        else if (str.toLowerCase().equals("afternoon")) {
-            return Timeslot.AFTERNOON;
-        }
-        else {
-            return Timeslot.EVENING;
-        }
-    }
-
-     */
-
-    /**
-     * Create a Location for an Event based on user input.
-     * Once Event is determined to be valid, create its Location.
-     * Turn the String input into a Location enum constant.
-     * @param str The string to be converted to Location enum.
-     * @return the Location enum constant that was generated.
-     */
-    /*
-    private Location createLocation(String str) {
-        if (str.toLowerCase().equals("hll114")) {
-            return Location.HLL114;
-        }
-        else if (str.toLowerCase().equals("arc103")) {
-            return Location.ARC103;
-        }
-        else if (str.toLowerCase().equals("be_aud")) {
-            return Location.BE_AUD;
-        }
-        else if (str.toLowerCase().equals("til232")) {
-            return Location.TIL232;
-        }
-        else if (str.toLowerCase().equals("ab2225")) {
-            return Location.AB2225;
-        }
-        else {
-            return Location.MU302;
-        }
-    }
-
-     */
-
-    /**
-     * Create a Department for an Event based on user input.
-     * Once Event is determined to be valid, create its Department.
-     * Turn the String input into a Department enum constant.
-     * @param str The string to be converted to Department enum.
-     * @return the Department enum constant that was generated.
-     */
-    /*
-    private Department createDepartment(String str) {
-        if (str.toLowerCase().equals("cs")) {
-            return Department.CS;
-        }
-        else if (str.toLowerCase().equals("ee")) {
-            return Department.EE;
-        }
-        else if (str.toLowerCase().equals("iti")) {
-            return Department.ITI;
-        }
-        else if (str.toLowerCase().equals("math")) {
-            return Department.MATH;
-        }
-        else {
-            return Department.BAIT;
-        }
-    }
-
-     */
 }
