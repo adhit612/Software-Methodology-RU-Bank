@@ -11,7 +11,7 @@ import java.text.DecimalFormat;
 public class MoneyMarket extends Savings {
     public static final double INTEREST_RATE = 0.045;
 
-    public static final double INTEREST_RATE_LOYAL = 0.045;
+    public static final double INTEREST_RATE_LOYAL = 0.0475;
     public static final int FEE = 25;
     public static final int LIMIT = 2000;
     public static final int MAX_WITHDRAWALS = 3;
@@ -36,6 +36,12 @@ public class MoneyMarket extends Savings {
      */
     @Override
     public double monthlyInterest() {
+        if(this.balance < LIMIT){
+            this.isLoyal = false;
+        }
+        else{
+            this.isLoyal = true;
+        }
         if (isLoyal) {
             return INTEREST_RATE_LOYAL;
         }
@@ -59,7 +65,7 @@ public class MoneyMarket extends Savings {
             this.isLoyal = false;
             double finalDeduction = FEE;
             if (this.withdrawal > MAX_WITHDRAWALS) {
-                finalDeduction -= 10;
+                finalDeduction += 10;
             }
             return finalDeduction;
         }
@@ -130,7 +136,7 @@ public class MoneyMarket extends Savings {
                     "::is loyal" + "::withdrawal " + this.getWithdrawal();
         }
         else {
-            return "Savings::" + this.getProfile().getFname() + " " +
+            return "Money Market::Savings::" + this.getProfile().getFname() + " " +
                     this.getProfile().getLname() + " " +
                     this.getProfile().getDOB().toString() +
                     "::Balance $" + df.format(this.getBalance())

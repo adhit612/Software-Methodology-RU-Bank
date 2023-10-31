@@ -42,7 +42,7 @@ public class Savings extends Account {
     public double monthlyInterest() {
         double finalRate = INTEREST_RATE;
         if (isLoyal) {
-            finalRate += 0.25;
+            finalRate += 0.0025;
             return finalRate;
         }
         return finalRate;

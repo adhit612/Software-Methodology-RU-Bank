@@ -196,9 +196,26 @@ public class AccountDatabase {
             }
             double interest = (this.accounts[x].getBalance()
                     * this.accounts[x].monthlyInterest()) / 12;
-            System.out.println(this.accounts[x].toString() + "::fee $" +
-                    df.format(this.accounts[x].monthlyFee()) +
-                    "::monthly interest $" + df.format(interest));
+            if(this.accounts[x].monthlyFee() < 1 && interest < 1) {
+                System.out.println(this.accounts[x].toString() + "::fee $" +
+                        "0" + df.format(this.accounts[x].monthlyFee()) +
+                        "::monthly interest $" + "0" + df.format(interest));
+            }
+            else if(this.accounts[x].monthlyFee() < 1) {
+                System.out.println(this.accounts[x].toString() + "::fee $" +
+                        "0" + df.format(this.accounts[x].monthlyFee()) +
+                        "::monthly interest $" + df.format(interest));
+            }
+            else if(interest < 1) {
+                System.out.println(this.accounts[x].toString() + "::fee $" +
+                        df.format(this.accounts[x].monthlyFee()) +
+                        "::monthly interest $" + "0" + df.format(interest));
+            }
+            else {
+                System.out.println(this.accounts[x].toString() + "::fee $" +
+                        df.format(this.accounts[x].monthlyFee()) +
+                        "::monthly interest $" + df.format(interest));
+            }
         }
         System.out.println("*end of list.");
         System.out.println();

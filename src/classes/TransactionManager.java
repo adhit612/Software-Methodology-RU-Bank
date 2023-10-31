@@ -106,7 +106,7 @@ public class TransactionManager {
         }
         int age = 2023 - date.getYear();
         int dayDiff = date.getDay() - date.getTodaysDate();
-        if (age <= MIN_AGE && dayDiff >= 0) {
+        if (age <= MIN_AGE && dayDiff >= 0){
             System.out.println("DOB invalid: " + contents[4] + " under 16.");
             return;
         }
@@ -138,7 +138,7 @@ public class TransactionManager {
             account = new Checking(res, prof);
         }
         else if (contents[1].equals("CC")) {
-            if (age >= MAX_AGE && (date.getDay() - date.getTodaysDate() >= 0)) {
+            if (age >= MAX_AGE && (date.getDay() - date.getTodaysDate() < 0)) {
                 System.out.println("DOB invalid: " + contents[4] + " over 24.");
                 return;
             }
